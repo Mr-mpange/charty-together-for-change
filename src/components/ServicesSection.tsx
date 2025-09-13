@@ -7,31 +7,31 @@ const ServicesSection = () => {
   const services = [
     {
       icon: GraduationCap,
-      title: 'Education Support',
-      description: 'Providing quality education, school supplies, and scholarships to ensure every child has access to learning opportunities.',
+      title: 'School Equipment Support',
+      description: 'Providing essential educational materials including books, supplies, uniforms, and learning equipment to ensure every child has access to quality education.',
       image: '/api/placeholder/400/300',
-      features: ['School Supplies', 'Scholarships', 'Tutoring Programs', 'Digital Learning'],
-    },
-    {
-      icon: Stethoscope,
-      title: 'Healthcare Assistance',
-      description: 'Delivering comprehensive healthcare services including medical checkups, treatments, and health education programs.',
-      image: '/api/placeholder/400/300',
-      features: ['Medical Checkups', 'Emergency Treatment', 'Health Education', 'Vaccination Programs'],
+      features: ['School Supplies', 'Books & Materials', 'Uniforms', 'Learning Equipment'],
     },
     {
       icon: Utensils,
-      title: 'Food Donation',
-      description: 'Ensuring food security through nutritious meal programs, food distribution, and agricultural training initiatives.',
+      title: 'Food Assistance Program',
+      description: 'Delivering nutritious meals and food packages to families and communities in need, ensuring no one goes hungry in our areas of operation.',
       image: '/api/placeholder/400/300',
-      features: ['Daily Meals', 'Food Packages', 'Nutrition Education', 'Agricultural Training'],
+      features: ['Daily Meals', 'Food Packages', 'Nutrition Education', 'Emergency Food Aid'],
     },
     {
-      icon: Home,
-      title: 'Orphanage Support',
-      description: 'Creating safe, nurturing environments where orphaned children can grow, learn, and thrive in a loving community.',
+      icon: Heart,
+      title: 'Support & Comfort Services',
+      description: 'Offering emotional support, counseling, and comfort to vulnerable individuals and families during difficult times and challenging circumstances.',
       image: '/api/placeholder/400/300',
-      features: ['Safe Housing', 'Caring Staff', 'Family Environment', 'Life Skills Training'],
+      features: ['Emotional Support', 'Counseling Services', 'Community Care', 'Family Assistance'],
+    },
+    {
+      icon: BookOpen,
+      title: 'Environmental Conservation',
+      description: 'Promoting environmental awareness, clean-up initiatives, and sustainable practices to protect our communities and natural resources.',
+      image: '/api/placeholder/400/300',
+      features: ['Tree Planting', 'Clean-up Drives', 'Environmental Education', 'Sustainability Programs'],
     },
   ];
 
@@ -55,7 +55,7 @@ const ServicesSection = () => {
             Our Services
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comprehensive support programs designed to transform lives and build stronger communities
+            Alnahd Charty Foundation provides targeted assistance programs that address the most critical needs in our communities
           </p>
         </motion.div>
 
@@ -166,10 +166,10 @@ const ServicesSection = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { number: '450', label: 'Students Educated', icon: BookOpen },
-              { number: '1,200', label: 'Medical Treatments', icon: Stethoscope },
-              { number: '25,000', label: 'Meals Provided', icon: Utensils },
-              { number: '85', label: 'Children Housed', icon: Home },
+              { number: '320', label: 'Students Supported', icon: BookOpen },
+              { number: '850', label: 'Food Packages Distributed', icon: Utensils },
+              { number: '15,000', label: 'Meals Provided', icon: Utensils },
+              { number: '120', label: 'Families Assisted', icon: Heart },
             ].map((impact, index) => {
               const Icon = impact.icon;
               return (

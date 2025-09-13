@@ -113,9 +113,9 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Together for{' '}
+          Alnahd Charty{' '}
           <span className="text-gradient-accent bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent">
-            Change
+            Foundation
           </span>
         </motion.h1>
 
@@ -125,7 +125,7 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
         >
-          Empowering Orphans & Communities Through Education, Healthcare, and Sustainable Development
+          Providing Essential Assistance Through School Equipment, Food Support, Comfort & Environmental Care
         </motion.p>
 
         <motion.div
@@ -156,10 +156,10 @@ const HeroSection = () => {
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           {[
-            { title: 'Education', icon: '📚' },
-            { title: 'Healthcare', icon: '🏥' },
-            { title: 'Food Support', icon: '🍎' },
-            { title: 'Shelter', icon: '🏠' },
+            { title: 'School Equipment', icon: '📚' },
+            { title: 'Food Support', icon: '🥖' },
+            { title: 'Comfort & Care', icon: '💙' },
+            { title: 'Environment', icon: '🌱' },
           ].map((service, index) => (
             <motion.div
               key={service.title}

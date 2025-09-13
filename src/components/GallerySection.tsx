@@ -21,96 +21,96 @@ const GallerySection = () => {
     {
       id: 1,
       image: gallery1,
-      title: 'Annual Fundraising Gala',
-      category: 'Events',
+      title: 'School Equipment Distribution',
+      category: 'Education',
       date: 'December 2024',
       location: 'Dar es Salaam',
-      description: 'Our annual fundraising gala brought together donors and beneficiaries for an evening of celebration and community building.'
+      description: 'Distributing essential school supplies, books, and learning materials to students in need across multiple schools.'
     },
     {
       id: 2,
       image: gallery2,
-      title: 'Children\'s Sports Day',
-      category: 'Activities',
+      title: 'Community Food Program',
+      category: 'Food Support',
       date: 'November 2024',
-      location: 'Mwanza Orphanage',
-      description: 'A joyful sports day where children from our supported orphanages came together for games, fun, and friendship.'
+      location: 'Mwanza Region',
+      description: 'Our monthly food assistance program providing nutritious food packages to vulnerable families in the community.'
     },
     {
       id: 3,
       image: gallery3,
-      title: 'Clean Water Inauguration',
-      category: 'Infrastructure',
+      title: 'Environmental Clean-up Drive',
+      category: 'Environment',
       date: 'October 2024',
-      location: 'Rural Dodoma',
-      description: 'Celebrating the completion of our latest clean water project that now serves over 500 community members.'
+      location: 'Dodoma City',
+      description: 'Community members joined together for our environmental conservation initiative, cleaning up public spaces and planting trees.'
     },
     {
       id: 4,
       image: gallery4,
-      title: 'Medical Camp Outreach',
-      category: 'Healthcare',
+      title: 'Support & Comfort Sessions',
+      category: 'Support',
       date: 'September 2024',
       location: 'Kilimanjaro Region',
-      description: 'Our medical team provided free healthcare services to remote communities, serving over 300 patients in three days.'
+      description: 'Providing emotional support and comfort services to families going through difficult times in our community.'
     },
     {
       id: 5,
       image: gallery5,
-      title: 'School Graduation Ceremony',
+      title: 'School Uniform Distribution',
       category: 'Education',
       date: 'August 2024',
-      location: 'Arusha Secondary School',
-      description: 'Celebrating the graduation of 45 scholarship recipients who completed their secondary education with our support.'
+      location: 'Arusha Schools',
+      description: 'Supporting students with school uniforms and essential learning materials for the new academic year.'
     },
     {
       id: 6,
       image: gallery6,
-      title: 'Thanksgiving Food Distribution',
-      category: 'Food Security',
+      title: 'Emergency Food Relief',
+      category: 'Food Support',
       date: 'July 2024',
-      location: 'Multiple Locations',
-      description: 'Distributing food packages to 200 families during our quarterly food security program.'
+      location: 'Rural Communities',
+      description: 'Emergency food distribution during drought season, reaching over 200 families with essential food supplies.'
     },
     {
       id: 7,
       image: gallery7,
-      title: 'Women\'s Skills Training',
-      category: 'Empowerment',
+      title: 'Environmental Education Workshop',
+      category: 'Environment',
       date: 'June 2024',
-      location: 'Morogoro Training Center',
-      description: 'Empowering women through tailoring and crafts training, providing them with sustainable income opportunities.'
+      location: 'Morogoro Schools',
+      description: 'Teaching children and communities about environmental conservation and sustainable living practices.'
     },
     {
       id: 8,
       image: gallery8,
-      title: 'Environmental Conservation',
-      category: 'Environment',
+      title: 'Book Donation Campaign',
+      category: 'Education',
       date: 'May 2024',
-      location: 'Serengeti Border',
-      description: 'Community tree planting initiative as part of our environmental conservation and climate change awareness program.'
+      location: 'Multiple Libraries',
+      description: 'Donating books and educational materials to school libraries and community reading centers.'
     },
     {
       id: 9,
       image: gallery9,
-      title: 'Mobile Library Program',
-      category: 'Education',
+      title: 'Community Support Meeting',
+      category: 'Support',
       date: 'April 2024',
-      location: 'Remote Villages',
-      description: 'Bringing books and learning resources to remote areas through our innovative mobile library truck.'
+      location: 'Community Centers',
+      description: 'Regular community meetings providing support, guidance, and comfort to families facing challenges.'
     },
     {
       id: 10,
       image: gallery10,
-      title: 'Winter Clothing Drive',
-      category: 'Support',
+      title: 'Tree Planting Initiative',
+      category: 'Environment',
       date: 'March 2024',
-      location: 'Highlands Region',
-      description: 'Distributing warm clothing and blankets to vulnerable families during the cold season.'
+      location: 'Various Locations',
+      description: 'Community tree planting project as part of our environmental conservation and climate awareness program.'
     }
   ];
 
-  const categories = ['All', 'Events', 'Education', 'Healthcare', 'Infrastructure', 'Activities'];
+  const categories = ['All', 'Education', 'Food Support', 'Environment', 'Support'];
   const [activeCategory, setActiveCategory] = useState('All');
 
   const filteredItems = activeCategory === 'All' 
@@ -137,10 +137,10 @@ const GallerySection = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gradient-primary">
-            Our Gallery
+            Our Impact Gallery
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Witness the impact of our work through moments of joy, hope, and transformation
+            See how Alnahd Charty Foundation makes a difference through school equipment, food support, comfort services, and environmental conservation
           </p>
         </motion.div>
 
