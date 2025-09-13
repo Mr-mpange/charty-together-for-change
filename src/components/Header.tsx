@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import logo from '@/assets/logo.png';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -44,20 +45,27 @@ const Header = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
+          {/* Logo - MARKED LOCATION */}
           <motion.div
             className="flex items-center space-x-2"
             whileHover={{ scale: 1.05 }}
           >
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-primary-light rounded-full flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
-            </div>
+             {/* LOGO IMAGE - Logo from src/assets */}
+             <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+               <img 
+                 src={logo} 
+                 alt="Charty Events Logo" 
+                 className="w-full h-full object-cover"
+               />
+             </div>
             <div>
+              {/* CHARTY EVENTS TEXT - Main title */}
               <h1 className="text-xl lg:text-2xl font-bold text-gradient-primary">
-                Charty Events
+                Alnahd Charty Foundation
               </h1>
+              {/* TAGLINE - "Together for Change" */}
               <p className="text-xs text-muted-foreground hidden sm:block">
-                Together for Change
+                Spread Kindness 
               </p>
             </div>
           </motion.div>

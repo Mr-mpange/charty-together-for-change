@@ -19,7 +19,7 @@ const GallerySection = () => {
 
   const galleryItems = [
     {
-      id: 1,
+      id: 7,
       image: gallery1,
       title: 'School Equipment Distribution',
       category: 'Education',
@@ -38,76 +38,85 @@ const GallerySection = () => {
     },
     {
       id: 3,
-      image: gallery3,
+      image: gallery1,
       title: 'Environmental Clean-up Drive',
       category: 'Environment',
       date: 'October 2024',
       location: 'Dodoma City',
       description: 'Community members joined together for our environmental conservation initiative, cleaning up public spaces and planting trees.'
     },
+    // {
+    //   id: 3,
+    //   image: gallery3,
+    //   title: 'Environmental Clean-up Drive',
+    //   category: 'Environment',
+    //   date: 'October 2024',
+    //   location: 'Dodoma City',
+    //   description: 'Community members joined together for our environmental conservation initiative, cleaning up public spaces and planting trees.'
+    // },
     {
       id: 4,
-      image: gallery4,
+      image: gallery3,
       title: 'Support & Comfort Sessions',
       category: 'Support',
       date: 'September 2024',
       location: 'Kilimanjaro Region',
       description: 'Providing emotional support and comfort services to families going through difficult times in our community.'
     },
-    {
-      id: 5,
-      image: gallery5,
-      title: 'School Uniform Distribution',
-      category: 'Education',
-      date: 'August 2024',
-      location: 'Arusha Schools',
-      description: 'Supporting students with school uniforms and essential learning materials for the new academic year.'
-    },
-    {
-      id: 6,
-      image: gallery6,
-      title: 'Emergency Food Relief',
-      category: 'Food Support',
-      date: 'July 2024',
-      location: 'Rural Communities',
-      description: 'Emergency food distribution during drought season, reaching over 200 families with essential food supplies.'
-    },
-    {
-      id: 7,
-      image: gallery7,
-      title: 'Environmental Education Workshop',
-      category: 'Environment',
-      date: 'June 2024',
-      location: 'Morogoro Schools',
-      description: 'Teaching children and communities about environmental conservation and sustainable living practices.'
-    },
-    {
-      id: 8,
-      image: gallery8,
-      title: 'Book Donation Campaign',
-      category: 'Education',
-      date: 'May 2024',
-      location: 'Multiple Libraries',
-      description: 'Donating books and educational materials to school libraries and community reading centers.'
-    },
-    {
-      id: 9,
-      image: gallery9,
-      title: 'Community Support Meeting',
-      category: 'Support',
-      date: 'April 2024',
-      location: 'Community Centers',
-      description: 'Regular community meetings providing support, guidance, and comfort to families facing challenges.'
-    },
-    {
-      id: 10,
-      image: gallery10,
-      title: 'Tree Planting Initiative',
-      category: 'Environment',
-      date: 'March 2024',
-      location: 'Various Locations',
-      description: 'Community tree planting project as part of our environmental conservation and climate awareness program.'
-    }
+    // {
+    //   id: 5,
+    //   image: gallery5,
+    //   title: 'School Uniform Distribution',
+    //   category: 'Education',
+    //   date: 'August 2024',
+    //   location: 'Arusha Schools',
+    //   description: 'Supporting students with school uniforms and essential learning materials for the new academic year.'
+    // },
+    // {
+    //   id: 6,
+    //   image: gallery6,
+    //   title: 'Emergency Food Relief',
+    //   category: 'Food Support',
+    //   date: 'July 2024',
+    //   location: 'Rural Communities',
+    //   description: 'Emergency food distribution during drought season, reaching over 200 families with essential food supplies.'
+    // },
+    // {
+    //   id: 7,
+    //   image: gallery7,
+    //   title: 'Environmental Education Workshop',
+    //   category: 'Environment',
+    //   date: 'June 2024',
+    //   location: 'Morogoro Schools',
+    //   description: 'Teaching children and communities about environmental conservation and sustainable living practices.'
+    // },
+    // {
+    //   id: 8,
+    //   image: gallery8,
+    //   title: 'Book Donation Campaign',
+    //   category: 'Education',
+    //   date: 'May 2024',
+    //   location: 'Multiple Libraries',
+    //   description: 'Donating books and educational materials to school libraries and community reading centers.'
+    // },
+    // {
+    //   id: 9,
+    //   image: gallery9,
+    //   title: 'Community Support Meeting',
+    //   category: 'Support',
+    //   date: 'April 2024',
+    //   location: 'Community Centers',
+    //   description: 'Regular community meetings providing support, guidance, and comfort to families facing challenges.'
+    // },
+    // {
+    //   id: 10,
+    //   image: gallery10,
+    //   title: 'Tree Planting Initiative',
+    //   category: 'Environment',
+    //   date: 'March 2024',
+    //   location: 'Various Locations',
+    //   description: 'Community tree planting project as part of our environmental conservation and climate awareness program.'
+    // }
   ];
 
   const categories = ['All', 'Education', 'Food Support', 'Environment', 'Support'];

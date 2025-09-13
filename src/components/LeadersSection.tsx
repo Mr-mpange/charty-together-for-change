@@ -12,11 +12,10 @@ import 'swiper/css/pagination';
 
 // Import leader images
 import leader1 from '@/assets/leader-1.jpg';
-import leader2 from '@/assets/leader-2.jpg';
+import leader2 from '@/assets/leader-2.png';
 import leader3 from '@/assets/leader-3.jpg';
-import leader4 from '@/assets/leader-4.jpg';
-import leader5 from '@/assets/leader-5.jpg';
-import leader6 from '@/assets/leader-6.jpg';
+import leader5 from '@/assets/leader-5.png';
+import leader6 from '@/assets/leader-6.png';
 
 const LeadersSection = () => {
   const [selectedLeader, setSelectedLeader] = useState(null);
@@ -24,56 +23,56 @@ const LeadersSection = () => {
   const leaders = [
     {
       id: 1,
-      name: 'Dr. Emmanuel Mwalimu',
-      title: 'Executive Director',
+      name: 'Anuary Ghusub',
+      title: 'Chief Director',
       image: leader1,
-      bio: 'Dr. Mwalimu brings over 15 years of experience in international development and community empowerment. He holds a PhD in Social Development from the University of Dar es Salaam and has led numerous successful initiatives across East Africa. Under his leadership, Charty Events has expanded its reach to serve over 1,500 children and 45 communities. His passion for sustainable development and community-driven solutions has been instrumental in creating lasting positive change.',
+      bio: 'Anuary Ghusub brings over 06 years of experience in international development and community empowerment. He holds a Degree in Social Development from the University of Dar es Salaam and has led numerous successful initiatives across East Africa. Under his leadership, Charty Events has expanded its reach to serve over 1,500 children and 45 communities. His passion for sustainable development and community-driven solutions has been instrumental in creating lasting positive change.',
       email: 'emmanuel.mwalimu@chartyevents.org',
       linkedin: '#'
     },
     {
       id: 2,
-      name: 'Grace Kimani',
-      title: 'Programs Coordinator',
-      image: leader2,
-      bio: 'Grace is a dedicated social worker with a Masters in Community Development and over 10 years of field experience. She oversees all our educational and community empowerment programs, ensuring they meet the highest standards of quality and effectiveness. Her background in child psychology and community organizing has been crucial in designing programs that truly serve the needs of our beneficiaries. Grace is fluent in Swahili, English, and several local dialects.',
-      email: 'grace.kimani@chartyevents.org',
+      name: 'Saidi kilindo',
+      title: 'Secretary of the organization',
+      image: leader3,
+      bio: 'Saidi manages our international partnerships and donor relations, bringing valuable experience from his previous roles with UNICEF and Save the Children. He has successfully secured funding for over $2 million worth of projects and established partnerships with organizations across 12 countries. His multilingual abilities and cross-cultural communication skills have been essential in building bridges between our local operations and international supporters.',
+      email: 'kilindosaid771@gmail.com',
       linkedin: '#'
     },
     {
       id: 3,
-      name: 'Michael Rodriguez',
-      title: 'International Partnerships Manager',
-      image: leader3,
-      bio: 'Michael manages our international partnerships and donor relations, bringing valuable experience from his previous roles with UNICEF and Save the Children. He has successfully secured funding for over $2 million worth of projects and established partnerships with organizations across 12 countries. His multilingual abilities and cross-cultural communication skills have been essential in building bridges between our local operations and international supporters.',
-      email: 'michael.rodriguez@chartyevents.org',
-      linkedin: '#'
-    },
-    {
-      id: 4,
-      name: 'Dr. Fatima Hassan',
-      title: 'Medical Director',
-      image: leader4,
-      bio: 'Dr. Hassan is a qualified pediatrician and public health specialist who oversees all our healthcare initiatives. She completed her medical training at Muhimbili University and has additional certification in tropical medicine. Her expertise in child health and nutrition has been vital in developing our medical outreach programs. She has personally conducted over 5,000 medical consultations and has trained dozens of community health workers.',
-      email: 'fatima.hassan@chartyevents.org',
-      linkedin: '#'
-    },
-    {
-      id: 5,
-      name: 'Professor Joseph Mbwana',
-      title: 'Education Coordinator',
-      image: leader5,
-      bio: 'Professor Mbwana is a retired educator with 30 years of experience in primary and secondary education. He holds a Masters in Educational Leadership and has been instrumental in curriculum development for our educational programs. His deep understanding of the Tanzanian education system and his network of contacts in schools across the region have been invaluable in ensuring our educational initiatives are both relevant and effective.',
-      email: 'joseph.mbwana@chartyevents.org',
-      linkedin: '#'
-    },
-    {
-      id: 6,
       name: 'Amara Ochieng',
       title: 'Community Outreach Specialist',
       image: leader6,
       bio: 'Amara is a young, dynamic professional with a degree in Social Sciences and a passion for grassroots community work. She leads our community engagement efforts and has been crucial in building trust and relationships with local communities. Her youth and energy, combined with her deep understanding of local customs and languages, make her an effective bridge between our organization and the communities we serve. She has organized over 100 community events and workshops.',
       email: 'amara.ochieng@chartyevents.org',
+      linkedin: '#'
+    },
+    {
+      id: 4,
+      name: 'Vicky',
+      title: 'Executive Director',
+      image: leader2,
+      bio: 'Vicky is a dedicated medical professional with over 8 years of experience in public health and community medicine. She leads our healthcare initiatives and mobile clinic programs, ensuring that underserved communities receive quality medical care. Her expertise in preventive medicine and health education has been crucial in improving health outcomes across multiple regions. She holds an MD from the University of Nairobi and specializes in community health programs.',
+      email: 'fatima.hassan@chartyevents.org',
+      linkedin: '#'
+    },
+    {
+      id: 5,
+      name: 'James Mwangi',
+      title: 'Education Coordinator',
+      image: leader5,
+      bio: 'James Mwangi is passionate about educational development and has been instrumental in establishing learning centers and educational programs for children in rural areas. With a Master\'s degree in Education from Kenyatta University, he has developed innovative teaching methods and curriculum adaptations for diverse learning environments. His commitment to educational equity has helped over 2,000 children access quality education and learning resources.',
+      email: 'james.mwangi@chartyevents.org',
+      linkedin: '#'
+    },
+    {
+      id: 6,
+      name: 'Grace Akinyi',
+      title: 'Program Manager',
+      image: leader6,
+      bio: 'Grace Akinyi oversees our comprehensive program management and ensures the effective implementation of all community development initiatives. With a background in Project Management and Social Work, she coordinates between different departments and stakeholders to maximize program impact. Her organizational skills and attention to detail have been essential in maintaining high standards across all our projects and ensuring sustainable outcomes for the communities we serve.',
+      email: 'grace.akinyi@chartyevents.org',
       linkedin: '#'
     }
   ];
