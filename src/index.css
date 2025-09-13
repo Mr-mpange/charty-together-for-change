@@ -132,6 +132,23 @@ All colors MUST be HSL.
 }
 
 @layer utilities {
+  /* Custom Shadow Utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
   /* NGO Button Variants */
   .btn-hero {
     @apply bg-gradient-to-r from-primary via-primary-light to-primary text-primary-foreground font-semibold py-4 px-8 rounded-full shadow-lg hover:shadow-glow transition-all duration-300 hover:scale-105;
