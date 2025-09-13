@@ -34,7 +34,7 @@ const HeroSection = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % heroImages.length);
-    }, 2000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);
@@ -72,7 +72,7 @@ const HeroSection = () => {
               alt={heroImages[currentImage].alt}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/80 via-primary/60 to-primary-light/40" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/30 via-primary/20 to-primary-light/10" />
           </motion.div>
         </AnimatePresence>
       </div>
