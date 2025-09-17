@@ -44,9 +44,38 @@ const FloatingButtons = () => {
   };
 
   const handleWhatsAppClick = () => {
-    const whatsappNumber = config.app.whatsappNumber;
-    const message = encodeURIComponent(config.app.whatsappMessage);
-    window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+    // Sanitize and validate number
+    const raw = String(config.app.whatsappNumber || '');
+    const digits = raw.replace(/[^0-9]/g, '');
+    const isValid = /^[1-9][0-9]{7,14}$/.test(digits); // WhatsApp requires intl format without +
+    const text = encodeURIComponent(config.app.whatsappMessage || '');
+
+    if (!isValid) {
+      console.warn('Invalid WhatsApp number configured. Expected international digits only, 8-15 length. Got:', raw);
+      alert('WhatsApp number is not configured correctly. Please check VITE_WHATSAPP_NUMBER in your .env.');
+      return;
+    }
+
+    const waLink = `https://wa.me/${digits}?text=${text}`;
+    const apiLink = `https://api.whatsapp.com/send?phone=${digits}&text=${text}`;
+
+    try {
+      const win = window.open(waLink, '_blank');
+      if (!win) {
+        // Popup blocked; try navigating current tab
+        window.location.href = waLink;
+      }
+    } catch (e) {
+      // Fallback to api.whatsapp.com
+      try {
+        const win2 = window.open(apiLink, '_blank');
+        if (!win2) {
+          window.location.href = apiLink;
+        }
+      } catch {
+        window.location.href = apiLink;
+      }
+    }
   };
 
   const handleAIChat = () => {
