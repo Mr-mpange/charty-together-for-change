@@ -1,0 +1,125 @@
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { config } from './config';
+
+// Create axios instance
+const api: AxiosInstance = axios.create({
+  baseURL: config.api.baseURL,
+  timeout: config.api.timeout,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Request interceptor
+api.interceptors.request.use(
+  (config) => {
+    // Add auth token if available
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor
+api.interceptors.response.use(
+  (response: AxiosResponse) => {
+    return response;
+  },
+  (error) => {
+    // Handle common errors
+    if (error.response?.status === 401) {
+      // Unauthorized - redirect to login or clear token
+      localStorage.removeItem('authToken');
+    }
+    return Promise.reject(error);
+  }
+);
+
+// API Types
+export interface ContactFormData {
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+}
+
+export interface DonationData {
+  amount: number;
+  type: 'one-time' | 'monthly';
+  paymentMethod: 'card' | 'mobile' | 'bank';
+  donorInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone?: string;
+    message?: string;
+  };
+}
+
+export interface Leader {
+  id: number;
+  name: string;
+  title: string;
+  image: string;
+  bio: string;
+  email: string;
+  linkedin?: string;
+}
+
+export interface GalleryItem {
+  id: number;
+  image: string;
+  title: string;
+  category: string;
+  date: string;
+  location: string;
+  description: string;
+}
+
+export interface Service {
+  id: number;
+  icon: string;
+  title: string;
+  description: string;
+  image: string;
+  features: string[];
+}
+
+export interface ImpactStat {
+  icon: string;
+  number: string;
+  label: string;
+}
+
+export interface AboutContent {
+  mission: string;
+  vision: string;
+  values: Array<{
+    icon: string;
+    title: string;
+    description: string;
+  }>;
+  impactStats: ImpactStat[];
+}
+
+// API Service Functions
+export const apiService = {
+  // Contact Form
+  async submitContactForm(data: ContactFormData): Promise<{ success: boolean; message: string }> {
+    const response = await api.post('/contact', data);
+    return response.data;
+  },
+
+  // Donations
+  async processDonation(data: DonationData): Promise<{ success: boolean; transactionId?: string; message: string }> {
+    const response = await api.post('/donations', data);
+    return response.data;
+  },
+};
+
+export default api;

@@ -1,19 +1,40 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Shield, Award, Users, DollarSign, CreditCard, Smartphone, Building } from 'lucide-react';
+import { Heart, Shield, Award, Users, DollarSign, CreditCard, Smartphone, Building, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useDonation } from '@/hooks/use-api';
+import { config } from '@/lib/config';
 
 const DonateSection = () => {
   const [selectedAmount, setSelectedAmount] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
   const [donationType, setDonationType] = useState('one-time');
   const [paymentMethod, setPaymentMethod] = useState('card');
+  // Method-specific fields (UI only; no real gateway)
+  const [card, setCard] = useState({ number: '', name: '', expiry: '', cvc: '' });
+  const [mobile, setMobile] = useState({ provider: 'M-Pesa', phone: '' });
+  const [bank, setBank] = useState({ reference: '' });
+  const [donorInfo, setDonorInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    message: '',
+  });
   const { toast } = useToast();
+  const donationMutation = useDonation();
+
+  // UI helpers
+  const displayAmount = selectedAmount === 'custom' ? customAmount : selectedAmount;
+  const displayAmountNumber = parseFloat(displayAmount || '0');
+  const formattedAmount = isNaN(displayAmountNumber)
+    ? '0'
+    : displayAmountNumber.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
   const suggestedAmounts = [
     { amount: '10', impact: 'Provides school supplies for 1 child' },
@@ -51,16 +72,54 @@ const DonateSection = () => {
       return;
     }
 
-    toast({
-      title: "Thank You! 🎉",
-      description: `Your ${donationType} donation of $${finalAmount} will make a real difference in children's lives.`,
-    });
+    if (!donorInfo.firstName || !donorInfo.lastName || !donorInfo.email) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required donor information.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    // In a real app, this would process the payment
-    console.log('Processing donation:', {
-      amount: finalAmount,
-      type: donationType,
-      paymentMethod,
+    // Build a simple payment detail summary
+    let paymentSummary = '';
+    if (paymentMethod === 'card') {
+      paymentSummary = `Card ending ${card.number.slice(-4)} exp ${card.expiry}`;
+    } else if (paymentMethod === 'mobile') {
+      paymentSummary = `Mobile Money via ${mobile.provider} (${mobile.phone})`;
+    } else if (paymentMethod === 'bank') {
+      paymentSummary = `Bank Transfer (reference: ${bank.reference || 'n/a'})`;
+    }
+
+    const augmentedDonorInfo = {
+      ...donorInfo,
+      message: [donorInfo.message, paymentSummary].filter(Boolean).join(' | '),
+    };
+
+    // Submit to backend (stubbed processing)
+    donationMutation.mutate({
+      amount: parseFloat(finalAmount),
+      type: donationType as 'one-time' | 'monthly',
+      paymentMethod: paymentMethod as 'card' | 'mobile' | 'bank',
+      donorInfo: augmentedDonorInfo,
+    }, {
+      onSuccess: () => {
+        // Reset form on success
+        setSelectedAmount('50');
+        setCustomAmount('');
+        setDonationType('one-time');
+        setPaymentMethod('card');
+        setCard({ number: '', name: '', expiry: '', cvc: '' });
+        setMobile({ provider: 'M-Pesa', phone: '' });
+        setBank({ reference: '' });
+        setDonorInfo({
+          firstName: '',
+          lastName: '',
+          email: '',
+          phone: '',
+          message: '',
+        });
+      },
     });
   };
 
@@ -194,6 +253,11 @@ const DonateSection = () => {
                         step="0.01"
                       />
                     </div>
+                    {displayAmountNumber > 0 && (
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        You will donate <span className="font-semibold">${formattedAmount}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -224,6 +288,74 @@ const DonateSection = () => {
                     );
                   })}
                 </div>
+
+                {/* Method-specific UI */}
+                <div className="mt-4 space-y-3">
+                  {paymentMethod === 'card' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <Input
+                        placeholder="Card Number"
+                        value={card.number}
+                        onChange={(e) => setCard({ ...card, number: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Name on Card"
+                        value={card.name}
+                        onChange={(e) => setCard({ ...card, name: e.target.value })}
+                      />
+                      <Input
+                        placeholder="MM/YY"
+                        value={card.expiry}
+                        onChange={(e) => setCard({ ...card, expiry: e.target.value })}
+                      />
+                      <Input
+                        placeholder="CVC"
+                        value={card.cvc}
+                        onChange={(e) => setCard({ ...card, cvc: e.target.value })}
+                      />
+                      <div className="md:col-span-2 text-xs text-muted-foreground">
+                        This is a demo UI. No real card charge will be made.
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'mobile' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <select
+                        className="border rounded-md h-10 px-3"
+                        value={mobile.provider}
+                        onChange={(e) => setMobile({ ...mobile, provider: e.target.value })}
+                      >
+                        <option>M-Pesa</option>
+                        <option>Tigo Pesa</option>
+                        <option>Airtel Money</option>
+                        <option>HaloPesa</option>
+                      </select>
+                      <Input
+                        placeholder="Mobile Number"
+                        value={mobile.phone}
+                        onChange={(e) => setMobile({ ...mobile, phone: e.target.value })}
+                      />
+                      <div className="md:col-span-2 text-xs text-muted-foreground">
+                        You may receive a prompt on your phone to authorize the payment.
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'bank' && (
+                    <div className="space-y-2">
+                      <div className="text-sm">Transfer to our bank account and include a reference. Contact us for details.</div>
+                      <Input
+                        placeholder="Your Transfer Reference (optional)"
+                        value={bank.reference}
+                        onChange={(e) => setBank({ ...bank, reference: e.target.value })}
+                      />
+                      <div className="text-xs text-muted-foreground">
+                        After transferring, you can also email your receipt to donations@chartyevents.org for quicker confirmation.
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Personal Information */}
@@ -232,25 +364,55 @@ const DonateSection = () => {
                   Donor Information
                 </Label>
                 <div className="grid grid-cols-2 gap-4">
-                  <Input placeholder="First Name" required />
-                  <Input placeholder="Last Name" required />
+                  <Input 
+                    placeholder="First Name" 
+                    value={donorInfo.firstName}
+                    onChange={(e) => setDonorInfo({...donorInfo, firstName: e.target.value})}
+                    required 
+                  />
+                  <Input 
+                    placeholder="Last Name" 
+                    value={donorInfo.lastName}
+                    onChange={(e) => setDonorInfo({...donorInfo, lastName: e.target.value})}
+                    required 
+                  />
                 </div>
-                <Input type="email" placeholder="Email Address" required />
-                <Input placeholder="Phone Number" />
-                <Textarea placeholder="Message (Optional)" rows={3} />
+                <Input 
+                  type="email" 
+                  placeholder="Email Address" 
+                  value={donorInfo.email}
+                  onChange={(e) => setDonorInfo({...donorInfo, email: e.target.value})}
+                  required 
+                />
+                <Input 
+                  placeholder="Phone Number" 
+                  value={donorInfo.phone}
+                  onChange={(e) => setDonorInfo({...donorInfo, phone: e.target.value})}
+                />
+                <Textarea 
+                  placeholder="Message (Optional)" 
+                  rows={3}
+                  value={donorInfo.message}
+                  onChange={(e) => setDonorInfo({...donorInfo, message: e.target.value})}
+                />
               </div>
 
               {/* Submit Button */}
               <Button
                 type="submit"
+                disabled={donationMutation.isPending}
                 className="w-full btn-donate text-lg py-4"
               >
-                Donate ${selectedAmount === 'custom' ? customAmount || '0' : selectedAmount} Now
+                {donationMutation.isPending ? 'Processing...' : `Donate $${formattedAmount} Now`}
               </Button>
+              <div className="mt-2 flex items-center justify-center text-xs text-muted-foreground">
+                <Lock className="w-3.5 h-3.5 mr-1" />
+                Payments are simulated for demo purposes. No charges will be made.
+              </div>
             </form>
           </motion.div>
 
-          {/* Donation Impact & Information */}
+          {/* Donation Summary and Info */}
           <motion.div
             className="space-y-8"
             initial={{ opacity: 0, x: 50 }}
@@ -258,6 +420,39 @@ const DonateSection = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
+            {/* Donation Summary (Sticky) */}
+            <div className="bg-white rounded-2xl p-6 shadow-strong md:sticky md:top-24">
+              <h3 className="text-2xl font-bold text-primary mb-4">Donation Summary</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Amount</span>
+                  <span className="font-semibold">${formattedAmount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Type</span>
+                  <span className="font-medium capitalize">{donationType.replace('-', ' ')}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Method</span>
+                  <span className="font-medium capitalize">{
+                    paymentMethod === 'card' ? 'Card' : paymentMethod === 'mobile' ? 'Mobile Money' : 'Bank Transfer'
+                  }</span>
+                </div>
+                <div className="h-px bg-border my-2" />
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Donor</span>
+                  <span className="font-medium truncate max-w-[60%]">
+                    {(donorInfo.firstName || donorInfo.lastName) ? `${donorInfo.firstName} ${donorInfo.lastName}`.trim() : '—'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Email</span>
+                  <span className="font-medium truncate max-w-[60%]">{donorInfo.email || '—'}</span>
+                </div>
+              </div>
+              <div className="mt-3 text-xs text-muted-foreground">This summary updates as you fill the form.</div>
+            </div>
+
             {/* Trust Indicators */}
             <div className="bg-gradient-to-r from-primary/5 to-accent/5 rounded-2xl p-6">
               <h3 className="text-2xl font-bold text-primary mb-4">Why Donate to Charty Events?</h3>
@@ -300,9 +495,9 @@ const DonateSection = () => {
               <h3 className="text-xl font-bold text-primary mb-4">Other Ways to Give</h3>
               <div className="space-y-2 text-sm">
                 <p><strong>Bank Transfer:</strong> Contact us for bank details</p>
-                <p><strong>Mobile Money:</strong> +255 123 456 789</p>
-                <p><strong>Email:</strong> donations@chartyevents.org</p>
-                <p><strong>Phone:</strong> +255 123 456 789</p>
+                <p><strong>Mobile Money:</strong> {config.app.phone}</p>
+                <p><strong>Email:</strong> {config.app.contactEmail}</p>
+                <p><strong>Phone:</strong> {config.app.phone}</p>
               </div>
             </div>
           </motion.div>

@@ -45,29 +45,27 @@ const Header = () => {
     >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo - MARKED LOCATION */}
+          {/* Logo and Title */}
           <motion.div
             className="flex items-center space-x-2"
             whileHover={{ scale: 1.05 }}
           >
-             {/* LOGO IMAGE - Logo from src/assets */}
-             <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
-               <img 
-                 src={logo} 
-                 alt="Charty Events Logo" 
-                 className="w-full h-full object-cover"
-               />
-             </div>
+            <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center">
+              <img 
+                src={logo} 
+                alt="Charty Events Logo" 
+                className="w-full h-full object-cover"
+              />
+            </div>
             <div>
-              {/* CHARTY EVENTS TEXT - Main title */}
               <h1 className="text-xl lg:text-2xl font-bold text-gradient-primary">
                 Alnahd Charty Foundation
               </h1>
-              {/* TAGLINE - "Together for Change" */}
               <p className="text-xs text-muted-foreground hidden sm:block">
                 Spread Kindness 
               </p>
             </div>
+            {/* Location Button removed */}
           </motion.div>
 
           {/* Desktop Navigation */}

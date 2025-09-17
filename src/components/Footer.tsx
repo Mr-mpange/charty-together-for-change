@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from 'lucide-react';
+import logo from '@/assets/logo.png';
+import { config } from '@/lib/config';
 
 const Footer = () => {
   const socialLinks = [
@@ -37,12 +39,12 @@ const Footer = () => {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                <Heart className="w-6 h-6 text-white" />
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-full overflow-hidden bg-white/20 flex items-center justify-center">
+                <img src={logo} alt="Alnahd Charty Foundation Logo" className="w-full h-full object-cover" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Charty Events</h3>
+                <h3 className="text-xl font-bold">Alnahd Charty Foundation</h3>
                 <p className="text-white/80 text-sm">Together for Change</p>
               </div>
             </div>
@@ -87,11 +89,11 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="w-5 h-5 text-white/80" />
-                <span className="text-white/90">info@chartyevents.org</span>
+                <span className="text-white/90">{config.app.contactEmail}</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="w-5 h-5 text-white/80" />
-                <span className="text-white/90">+255 123 456 789</span>
+                <span className="text-white/90">{config.app.phone}</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="w-5 h-5 text-white/80 mt-1" />
@@ -143,9 +145,18 @@ const Footer = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <p className="text-white/80">
-            © 2025 Charty Events. All rights reserved. Making a difference together.
-          </p>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-white/80">
+              2025 Alnahd Charty Foundation. All rights reserved.
+            </p>
+            <div className="flex items-center gap-2 text-white/90">
+              <span>Made with</span>
+              <span className="text-red-300" aria-label="love">❤</span>
+              <span>by</span>
+              <img src={logo} alt="Alnahd Logo" className="w-6 h-6 rounded-full border border-white/30" />
+              <span className="font-semibold">Alnahd</span>
+            </div>
+          </div>
         </motion.div>
       </div>
     </footer>

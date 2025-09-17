@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useContactForm } from '@/hooks/use-api';
+import { config } from '@/lib/config';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -15,24 +17,25 @@ const ContactSection = () => {
     message: '',
   });
   const { toast } = useToast();
+  const contactMutation = useContactForm();
 
   const contactInfo = [
     {
       icon: Mail,
       title: 'Email Us',
-      details: 'info@chartyevents.org',
+      details: config.app.contactEmail,
       subdeta: 'We respond within 24 hours',
     },
     {
       icon: Phone,
       title: 'Call Us',
-      details: '+255 123 456 789',
+      details: config.app.phone,
       subdeta: 'Mon-Fri, 8:00 AM - 6:00 PM EAT',
     },
     {
       icon: MapPin,
       title: 'Visit Us',
-      details: 'Dar es Salaam, Tanzania',
+      details: 'Magomeni, Dar es Salaam, Tanzania',
       subdeta: 'East Africa Regional Office',
     },
     {
@@ -69,21 +72,18 @@ const ContactSection = () => {
       return;
     }
 
-    toast({
-      title: "Message Sent! 📧",
-      description: "Thank you for contacting us. We'll get back to you soon.",
+    // Submit to backend
+    contactMutation.mutate(formData, {
+      onSuccess: () => {
+        // Reset form on success
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+        });
+      },
     });
-
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: '',
-    });
-
-    // In a real app, this would send the message to the backend
-    console.log('Contact form submitted:', formData);
   };
 
   return (
@@ -183,10 +183,11 @@ const ContactSection = () => {
 
               <Button
                 type="submit"
+                disabled={contactMutation.isPending}
                 className="w-full btn-hero text-lg py-4 flex items-center justify-center space-x-2"
               >
                 <Send className="w-5 h-5" />
-                <span>Send Message</span>
+                <span>{contactMutation.isPending ? 'Sending...' : 'Send Message'}</span>
               </Button>
             </form>
           </motion.div>
@@ -227,7 +228,7 @@ const ContactSection = () => {
               })}
             </div>
 
-            {/* Google Map Placeholder */}
+            {/* Google Map */}
             <motion.div
               className="bg-white rounded-xl shadow-soft overflow-hidden"
               initial={{ opacity: 0, y: 30 }}
@@ -235,19 +236,26 @@ const ContactSection = () => {
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
             >
-              <div className="h-64 bg-gradient-to-r from-primary/20 to-accent/20 relative flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h4 className="text-xl font-semibold text-primary mb-2">
-                    Our Location
-                  </h4>
-                  <p className="text-muted-foreground">
-                    Dar es Salaam, Tanzania<br />
-                    East Africa
-                  </p>
+              <div className="h-64 relative">
+                <iframe
+                  src="https://www.google.com/maps?q=Magomeni%2C%20Dar%20es%20Salaam%2C%20Tanzania&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Charty Events Location - Magomeni, Dar es Salaam, Tanzania"
+                />
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="w-5 h-5 text-primary" />
+                    <div>
+                      <h4 className="font-semibold text-primary text-sm">Our Office</h4>
+                      <p className="text-xs text-muted-foreground">Magomeni, Dar es Salaam, Tanzania</p>
+                    </div>
+                  </div>
                 </div>
-                {/* In a real app, embed Google Maps here */}
-                <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
               </div>
             </motion.div>
 
@@ -324,6 +332,7 @@ const ContactSection = () => {
           </div>
         </motion.div>
       </div>
+
     </section>
   );
 };
