@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
-import { apiService, ContactFormData, DonationData } from '@/lib/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { apiService, ContactFormData, DonationData, ZenopayPaymentData, CurrencyConversionData } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
 // Mutation Hooks
@@ -39,6 +39,62 @@ export const useDonation = () => {
       toast({
         title: "Donation Failed",
         description: error.response?.data?.message || "Failed to process donation. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+// Zenopay Payment Hooks
+export const useZenopayPayment = () => {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: apiService.initiateMobileMoneyPayment,
+    onSuccess: (data) => {
+      toast({
+        title: "Payment Initiated! 📱",
+        description: `Your ${data.data.displayAmount} payment has been initiated. You will receive a prompt on your phone.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Payment Failed",
+        description: error.response?.data?.message || "Failed to initiate payment. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const usePaymentStatus = (orderId: string) => {
+  return useQuery({
+    queryKey: ['payment-status', orderId],
+    queryFn: () => apiService.checkPaymentStatus(orderId),
+    enabled: !!orderId,
+    refetchInterval: 5000, // Check every 5 seconds
+  });
+};
+
+// Currency Conversion Hooks
+export const useCurrencyRate = () => {
+  return useQuery({
+    queryKey: ['currency-rate'],
+    queryFn: apiService.getCurrencyRate,
+    refetchInterval: 300000, // Refresh every 5 minutes
+    staleTime: 240000, // Consider data fresh for 4 minutes
+  });
+};
+
+export const useCurrencyConversion = () => {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: apiService.convertCurrency,
+    onError: (error: any) => {
+      toast({
+        title: "Conversion Error",
+        description: "Failed to convert currency. Using cached rates.",
         variant: "destructive",
       });
     },

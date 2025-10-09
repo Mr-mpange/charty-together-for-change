@@ -17,6 +17,10 @@ export const config = {
     paypal: {
       clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
     },
+    zenopay: {
+      baseURL: import.meta.env.VITE_ZENOPAY_BASE_URL || 'http://localhost:3000/api',
+      apiKey: import.meta.env.VITE_ZENOPAY_API_KEY || '',
+    },
   },
   
   // Analytics (Optional)

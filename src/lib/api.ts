@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { config } from './config';
 
-// Create axios instance
+// Create axios instance for general API
 const api: AxiosInstance = axios.create({
   baseURL: config.api.baseURL,
   timeout: config.api.timeout,
@@ -9,6 +9,63 @@ const api: AxiosInstance = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Create axios instance for Zenopay API
+const zenopayApi: AxiosInstance = axios.create({
+  baseURL: config.payments.zenopay.baseURL,
+  timeout: config.api.timeout,
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': config.payments.zenopay.apiKey,
+  },
+});
+
+// Zenopay API Types
+export interface ZenopayPaymentData {
+  buyerName: string;
+  buyerPhone: string;
+  buyerEmail: string;
+  amount: number;
+  currency?: 'USD' | 'TZS';
+  webhookUrl?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface CurrencyConversionData {
+  amount: number;
+  from?: 'USD' | 'TZS';
+  to?: 'USD' | 'TZS';
+}
+
+export interface CurrencyRateInfo {
+  rate: number;
+  rateInfo: {
+    from: string;
+    to: string;
+    rate: number;
+    lastUpdated: string | null;
+    source: string;
+  };
+  formatted: string;
+}
+
+export interface PaymentStatusData {
+  orderId: string;
+}
+
+export interface MobileMoneyPaymentResponse {
+  success: boolean;
+  message: string;
+  data: {
+    orderId: string;
+    paymentStatus: string;
+    reference: string;
+    amount: number;
+    originalAmount: number;
+    originalCurrency: string;
+    displayAmount: string;
+  };
+}
 
 // Request interceptor
 api.interceptors.request.use(
@@ -115,9 +172,31 @@ export const apiService = {
     return response.data;
   },
 
-  // Donations
+  // Donations (Legacy)
   async processDonation(data: DonationData): Promise<{ success: boolean; transactionId?: string; message: string }> {
     const response = await api.post('/donations', data);
+    return response.data;
+  },
+
+  // Zenopay Payment Integration
+  async initiateMobileMoneyPayment(data: ZenopayPaymentData): Promise<MobileMoneyPaymentResponse> {
+    const response = await zenopayApi.post('/payments/mobile_money_tanzania', data);
+    return response.data;
+  },
+
+  async checkPaymentStatus(orderId: string): Promise<any> {
+    const response = await zenopayApi.get(`/payments/order-status/${orderId}`);
+    return response.data;
+  },
+
+  // Currency Conversion
+  async getCurrencyRate(): Promise<CurrencyRateInfo> {
+    const response = await zenopayApi.get('/payments/currency/rate');
+    return response.data;
+  },
+
+  async convertCurrency(data: CurrencyConversionData): Promise<any> {
+    const response = await zenopayApi.post('/payments/currency/convert', data);
     return response.data;
   },
 };

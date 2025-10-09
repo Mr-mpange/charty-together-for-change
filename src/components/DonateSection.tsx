@@ -1,25 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Shield, Award, Users, DollarSign, CreditCard, Smartphone, Building, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
-import { useDonation } from '@/hooks/use-api';
+import { useDonation, useZenopayPayment, useCurrencyRate } from '@/hooks/use-api';
 import { config } from '@/lib/config';
 
 const DonateSection = () => {
   const [selectedAmount, setSelectedAmount] = useState('50');
   const [customAmount, setCustomAmount] = useState('');
-  const [donationType, setDonationType] = useState('one-time');
   const [paymentMethod, setPaymentMethod] = useState('card');
-  // Method-specific fields (UI only; no real gateway)
-  const [card, setCard] = useState({ number: '', name: '', expiry: '', cvc: '' });
-  const [mobile, setMobile] = useState({ provider: 'M-Pesa', phone: '' });
-  const [bank, setBank] = useState({ reference: '' });
-  const [donorInfo, setDonorInfo] = useState({
+  const [currency, setCurrency] = useState<'USD' | 'TZS'>('USD');
+  const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
+  const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
+  const [card, setCard] = useState<{ number: string; name: string; expiry: string; cvc: string }>({
+    number: '',
+    name: '',
+    expiry: '',
+    cvc: '',
+  });
+  const [mobile, setMobile] = useState<{ provider: string; phone: string }>({
+    provider: 'M-Pesa',
+    phone: '',
+  });
+  const [bank, setBank] = useState<{ reference: string }>({
+    reference: '',
+  });
+  const [donorInfo, setDonorInfo] = useState<{
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    message: string;
+  }>({
     firstName: '',
     lastName: '',
     email: '',
@@ -28,13 +45,46 @@ const DonateSection = () => {
   });
   const { toast } = useToast();
   const donationMutation = useDonation();
+  const zenopayPaymentMutation = useZenopayPayment();
+  const { data: currencyRate } = useCurrencyRate();
 
-  // UI helpers
+  // UI helpers - declared before useEffect
   const displayAmount = selectedAmount === 'custom' ? customAmount : selectedAmount;
   const displayAmountNumber = parseFloat(displayAmount || '0');
   const formattedAmount = isNaN(displayAmountNumber)
     ? '0'
     : displayAmountNumber.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+
+  // Handle currency conversion
+  useEffect(() => {
+    const convertAmount = async () => {
+      if (displayAmountNumber > 0 && currency === 'USD' && currencyRate?.rate) {
+        const converted = displayAmountNumber * currencyRate.rate;
+        setConvertedAmount(Math.round(converted));
+      } else if (currency === 'TZS') {
+        setConvertedAmount(displayAmountNumber);
+      } else {
+        setConvertedAmount(null);
+      }
+    };
+
+    convertAmount();
+  }, [displayAmountNumber, currency, currencyRate]);
+
+  const getDisplayAmount = () => {
+    if (currency === 'USD') {
+      return `$${formattedAmount}`;
+    } else {
+      return `${formattedAmount} TZS`;
+    }
+  };
+
+  const getConvertedDisplay = () => {
+    if (currency === 'USD' && convertedAmount) {
+      return `≈ ${convertedAmount.toLocaleString()} TZS`;
+    }
+    return '';
+  };
 
   const suggestedAmounts = [
     { amount: '10', impact: 'Provides school supplies for 1 child' },
@@ -60,9 +110,9 @@ const DonateSection = () => {
 
   const handleDonate = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const finalAmount = selectedAmount === 'custom' ? customAmount : selectedAmount;
-    
+
     if (!finalAmount || parseFloat(finalAmount) <= 0) {
       toast({
         title: "Invalid Amount",
@@ -81,6 +131,43 @@ const DonateSection = () => {
       return;
     }
 
+    // Use Zenopay for mobile money payments
+    if (paymentMethod === 'mobile') {
+      zenopayPaymentMutation.mutate({
+        buyerName: `${donorInfo.firstName} ${donorInfo.lastName}`,
+        buyerPhone: donorInfo.phone || '',
+        buyerEmail: donorInfo.email,
+        amount: parseFloat(finalAmount),
+        currency: currency,
+        metadata: {
+          donationType: donationType,
+          message: donorInfo.message,
+          provider: mobile.provider
+        }
+      }, {
+        onSuccess: (data) => {
+          // Reset form on success
+          setSelectedAmount('50');
+          setCustomAmount('');
+          setDonationType('one-time');
+          setPaymentMethod('card');
+          setCurrency('USD');
+          setCard({ number: '', name: '', expiry: '', cvc: '' });
+          setMobile({ provider: 'M-Pesa', phone: '' });
+          setBank({ reference: '' });
+          setDonorInfo({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            message: '',
+          });
+        },
+      });
+      return;
+    }
+
+    // For card and bank payments, use the legacy donation system (for now)
     // Build a simple payment detail summary
     let paymentSummary = '';
     if (paymentMethod === 'card') {
@@ -109,6 +196,7 @@ const DonateSection = () => {
         setCustomAmount('');
         setDonationType('one-time');
         setPaymentMethod('card');
+        setCurrency('USD');
         setCard({ number: '', name: '', expiry: '', cvc: '' });
         setMobile({ provider: 'M-Pesa', phone: '' });
         setBank({ reference: '' });
@@ -123,7 +211,7 @@ const DonateSection = () => {
     });
   };
 
-  return (
+    return (
     <section id="donate" className="py-20 bg-gradient-to-b from-secondary to-background">
       <div className="container mx-auto px-4">
         {/* Section Header */}
@@ -182,21 +270,26 @@ const DonateSection = () => {
             viewport={{ once: true }}
           >
             <form onSubmit={handleDonate} className="space-y-6">
-              {/* Donation Type */}
+              {/* Currency Selection */}
               <div>
                 <Label className="text-lg font-semibold text-primary mb-4 block">
-                  Donation Type
+                  Currency
                 </Label>
-                <RadioGroup value={donationType} onValueChange={setDonationType}>
+                <RadioGroup value={currency} onValueChange={(value) => setCurrency(value as 'USD' | 'TZS')}>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="one-time" id="one-time" />
-                    <Label htmlFor="one-time" className="cursor-pointer">One-time Donation</Label>
+                    <RadioGroupItem value="USD" id="usd" />
+                    <Label htmlFor="usd" className="cursor-pointer">US Dollars (USD)</Label>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="monthly" id="monthly" />
-                    <Label htmlFor="monthly" className="cursor-pointer">Monthly Recurring</Label>
+                    <RadioGroupItem value="TZS" id="tzs" />
+                    <Label htmlFor="tzs" className="cursor-pointer">Tanzanian Shillings (TZS)</Label>
                   </div>
                 </RadioGroup>
+                {currency === 'USD' && currencyRate?.formatted && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Current rate: {currencyRate.formatted}
+                  </p>
+                )}
               </div>
 
               {/* Amount Selection */}
@@ -255,14 +348,17 @@ const DonateSection = () => {
                     </div>
                     {displayAmountNumber > 0 && (
                       <p className="mt-2 text-xs text-muted-foreground">
-                        You will donate <span className="font-semibold">${formattedAmount}</span>
+                        You will donate <span className="font-semibold">{getDisplayAmount()}</span>
+                        {getConvertedDisplay() && (
+                          <span className="block text-primary font-medium">
+                            {getConvertedDisplay()}
+                          </span>
+                        )}
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-
-              {/* Payment Method */}
               <div>
                 <Label className="text-lg font-semibold text-primary mb-4 block">
                   Payment Method
@@ -400,14 +496,18 @@ const DonateSection = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={donationMutation.isPending}
+                disabled={donationMutation.isPending || zenopayPaymentMutation.isPending}
                 className="w-full btn-donate text-lg py-4"
               >
-                {donationMutation.isPending ? 'Processing...' : `Donate $${formattedAmount} Now`}
+                {donationMutation.isPending || zenopayPaymentMutation.isPending
+                  ? 'Processing...'
+                  : `Donate ${getDisplayAmount()} Now`}
               </Button>
               <div className="mt-2 flex items-center justify-center text-xs text-muted-foreground">
                 <Lock className="w-3.5 h-3.5 mr-1" />
-                Payments are simulated for demo purposes. No charges will be made.
+                {paymentMethod === 'mobile'
+                  ? 'Real payments powered by Zenopay. You will receive a mobile prompt.'
+                  : 'Payments are simulated for demo purposes. No charges will be made.'}
               </div>
             </form>
           </motion.div>
