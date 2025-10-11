@@ -30,21 +30,46 @@ const heroImages = [
 
 const HeroSection = () => {
   const [currentImage, setCurrentImage] = useState(0);
+  const [nextImage, setNextImage] = useState(1);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Preload images
+  useEffect(() => {
+    heroImages.forEach((img) => {
+      const image = new Image();
+      image.src = img.src;
+    });
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentImage((prev) => (prev + 1) % heroImages.length);
+        setNextImage((prev) => (prev + 1) % heroImages.length);
+        setIsTransitioning(false);
+      }, 500); // Half of transition duration
     }, 10000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const nextImage = () => {
-    setCurrentImage((prev) => (prev + 1) % heroImages.length);
+  const handleNext = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+      setNextImage((prev) => (prev + 1) % heroImages.length);
+      setIsTransitioning(false);
+    }, 500);
   };
 
-  const prevImage = () => {
-    setCurrentImage((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+  const handlePrev = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentImage((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+      setNextImage((prev) => (prev - 1 + heroImages.length) % heroImages.length);
+      setIsTransitioning(false);
+    }, 500);
   };
 
   const handleNavClick = (href: string) => {
@@ -58,35 +83,39 @@ const HeroSection = () => {
     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image Carousel */}
       <div className="absolute inset-0 z-0">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentImage}
-            className="absolute inset-0"
-            initial={{ opacity: 0, scale: 1.1 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-          >
-            <img
-              src={heroImages[currentImage].src}
-              alt={heroImages[currentImage].alt}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/30 via-primary/20 to-primary-light/10" />
-          </motion.div>
-        </AnimatePresence>
+        <div className="relative w-full h-full">
+          <motion.img
+            key={`current-${currentImage}`}
+            src={heroImages[currentImage].src}
+            alt={heroImages[currentImage].alt}
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ opacity: 1 }}
+            animate={{ opacity: isTransitioning ? 0 : 1 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+          <motion.img
+            key={`next-${nextImage}`}
+            src={heroImages[nextImage].src}
+            alt={heroImages[nextImage].alt}
+            className="absolute inset-0 w-full h-full object-cover"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isTransitioning ? 1 : 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-dark/30 via-primary/20 to-primary-light/10" />
       </div>
 
       {/* Navigation Arrows */}
       <button
-        onClick={prevImage}
+        onClick={handlePrev}
         className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200"
       >
         <ChevronLeft className="w-6 h-6 text-white" />
       </button>
       
       <button
-        onClick={nextImage}
+        onClick={handleNext}
         className="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-all duration-200"
       >
         <ChevronRight className="w-6 h-6 text-white" />
@@ -97,7 +126,14 @@ const HeroSection = () => {
         {heroImages.map((_, index) => (
           <button
             key={index}
-            onClick={() => setCurrentImage(index)}
+            onClick={() => {
+              setIsTransitioning(true);
+              setTimeout(() => {
+                setCurrentImage(index);
+                setNextImage((index + 1) % heroImages.length);
+                setIsTransitioning(false);
+              }, 500);
+            }}
             className={`w-3 h-3 rounded-full transition-all duration-200 ${
               index === currentImage ? 'bg-white' : 'bg-white/50'
             }`}
