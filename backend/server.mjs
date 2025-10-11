@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load environment variables from parent directory
-dotenv.config({ path: 'c:\\Users\\hp\\Desktop\\charty-together-for-change\\.env' });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import express from 'express';
 import cors from 'cors';
