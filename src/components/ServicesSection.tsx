@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { GraduationCap, Stethoscope, Utensils, Home, BookOpen, Heart } from 'lucide-react';
+import { GraduationCap, Stethoscope, Utensils, Home, BookOpen, Heart, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 const ServicesSection = () => {
+  const [selectedService, setSelectedService] = useState(null);
+
   const services = [
     {
       icon: GraduationCap,
@@ -11,6 +14,7 @@ const ServicesSection = () => {
       description: 'Providing essential educational materials including books, supplies, uniforms, and learning equipment to ensure every child has access to quality education.',
       image: '/api/placeholder/400/300',
       features: ['School Supplies', 'Books & Materials', 'Uniforms', 'Learning Equipment'],
+      details: 'Our School Equipment Support program has helped over 500 students in the last year by providing necessary tools for learning.',
     },
     {
       icon: Utensils,
@@ -18,6 +22,7 @@ const ServicesSection = () => {
       description: 'Delivering nutritious meals and food packages to families and communities in need, ensuring no one goes hungry in our areas of operation.',
       image: '/api/placeholder/400/300',
       features: ['Daily Meals', 'Food Packages', 'Nutrition Education', 'Emergency Food Aid'],
+      details: 'We distribute over 1,000 food packages monthly, focusing on nutritious options for families.',
     },
     {
       icon: Heart,
@@ -25,6 +30,7 @@ const ServicesSection = () => {
       description: 'Offering emotional support, counseling, and comfort to vulnerable individuals and families during difficult times and challenging circumstances.',
       image: '/api/placeholder/400/300',
       features: ['Emotional Support', 'Counseling Services', 'Community Care', 'Family Assistance'],
+      details: 'Our counseling services have supported 200+ families this year.',
     },
     {
       icon: BookOpen,
@@ -32,12 +38,12 @@ const ServicesSection = () => {
       description: 'Promoting environmental awareness, clean-up initiatives, and sustainable practices to protect our communities and natural resources.',
       image: '/api/placeholder/400/300',
       features: ['Tree Planting', 'Clean-up Drives', 'Environmental Education', 'Sustainability Programs'],
+      details: 'Planted 1,000 trees and educated 300 students on sustainability.',
     },
   ];
 
-  const handleLearnMore = (service: string) => {
-    // Could navigate to detailed service page or show modal
-    console.log(`Learning more about ${service}`);
+  const handleLearnMore = (service) => {
+    setSelectedService(service);
   };
 
   return (
@@ -103,7 +109,7 @@ const ServicesSection = () => {
 
                   {/* Action Button */}
                   <Button
-                    onClick={() => handleLearnMore(service.title)}
+                    onClick={() => handleLearnMore(service)}
                     variant="outline"
                     className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300"
                   >
@@ -114,6 +120,23 @@ const ServicesSection = () => {
             );
           })}
         </div>
+
+        {/* Simple Modal for Service Details */}
+        {selectedService && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-2xl font-bold text-primary">{selectedService.title}</h3>
+                <button onClick={() => setSelectedService(null)} className="text-gray-500 hover:text-gray-700">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <p className="text-foreground mb-4">{selectedService.description}</p>
+              <p className="text-muted-foreground mb-4">{selectedService.details}</p>
+              <Button onClick={() => setSelectedService(null)} className="w-full">Close</Button>
+            </div>
+          </div>
+        )}
 
         {/* Call to Action */}
         <motion.div
