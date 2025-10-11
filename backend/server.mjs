@@ -2,9 +2,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load environment variables from parent directory
-dotenv.config({ path: path.join(process.cwd(), '../.env') });
+dotenv.config({ path: 'c:\\Users\\hp\\Desktop\\charty-together-for-change\\.env' });
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
@@ -77,37 +76,27 @@ class ZenopayService {
         webhook_url: paymentData.webhookUrl
       };
 
+      console.log('[zenopay] Sending payload to API:', JSON.stringify(payload, null, 2));
       const response = await this.client.post('/payments/mobile_money_tanzania', payload);
+      console.log('[zenopay] Full API response:', JSON.stringify(response.data, null, 2));
 
+      // Handle potential key mismatches in response
       return {
         success: true,
-        orderId: response.data.order_id,
-        paymentStatus: response.data.payment_status,
-        reference: response.data.reference,
-        metadata: response.data.metadata
+        orderId: response.data.order_id || `order_${Date.now()}`,
+        paymentStatus: response.data.payment_status || 'PENDING',
+        reference: response.data.reference || `REF_${Date.now()}`,
+        metadata: response.data.metadata || paymentData.metadata
       };
     } catch (error) {
+      console.error('[zenopay] API call failed:', error.response?.data || error.message);
+      console.error('[zenopay] Status code:', error.response?.status);
       throw new Error(`Payment initiation failed: ${error.response?.data?.message || error.message}`);
     }
   }
 }
 
 const zenopayService = new ZenopayService();
-
-// Initialize Gemini AI client
-let genAI = null;
-const geminiApiKey = process.env.AI_BOT_API_KEY || process.env.GEMINI_API_KEY;
-
-if (geminiApiKey && geminiApiKey !== 'your-ai-api-key-here') {
-  try {
-    genAI = new GoogleGenerativeAI(geminiApiKey);
-    console.log('[ai-bot] Gemini AI client initialized');
-  } catch (err) {
-    console.warn('[ai-bot] Failed to initialize Gemini AI client:', err?.message || err);
-  }
-} else {
-  console.warn('[ai-bot] Gemini API key not configured. AI bot will use fallback responses.');
-}
 
 // Config
 const PORT = process.env.PORT || 3001;
@@ -224,75 +213,6 @@ if (hasTwilio) {
   console.warn('[sms] Twilio env vars not fully set. SMS will be skipped.');
 }
 
-// AI Bot function
-async function getAIBotResponse(message, context = '') {
-  // If Gemini AI is not configured, use fallback responses
-  if (!genAI) {
-    return getFallbackResponse(message);
-  }
-
-  try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-    const organizationContext = `
-    You are an AI assistant for Al Nahd Charty Foundation (Charty Events), a charitable organization in Tanzania.
-    Organization details:
-    - Name: Al Nahd Charty Foundation
-    - Location: Dar es Salaam, Tanzania
-    - Contact: kilindosaid771@gmail.com, Phone: 0683859574
-    - WhatsApp: +255683859574
-    - Mission: Empowering communities and transforming lives through compassionate service
-    - Focus areas: Education support, school equipment, community development
-
-    You should provide helpful, accurate information about the organization, its services, and how people can get involved or donate.
-    Be friendly, professional, and informative. If users ask about topics outside your knowledge, direct them to contact the organization directly.
-    `;
-
-    const prompt = `${organizationContext}\n\nUser question: ${message}\n\nProvide a helpful response:`;
-
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    return response.text();
-  } catch (error) {
-    console.error('[ai-bot] Error calling Gemini API:', error?.message || error);
-    return getFallbackResponse(message);
-  }
-}
-
-// Fallback responses for when Gemini API is not available
-function getFallbackResponse(message) {
-  const msg = message.toLowerCase();
-
-  if (msg.includes('hello') || msg.includes('hi') || msg.includes('help')) {
-    return "Hello! I'm the AI assistant for Al Nahd Charty Foundation. I can help you learn about our organization, services, and how to get involved. What would you like to know?";
-  }
-
-  if (msg.includes('about') || msg.includes('organization') || msg.includes('foundation')) {
-    return "Al Nahd Charty Foundation is a charitable organization based in Dar es Salaam, Tanzania. We focus on empowering communities through education support, school equipment distribution, and community development initiatives.";
-  }
-
-  if (msg.includes('services') || msg.includes('programs') || msg.includes('work')) {
-    return "We provide school equipment support, educational materials, and work to empower local communities. Our main focus is on education and helping children access quality learning resources.";
-  }
-
-  if (msg.includes('donate') || msg.includes('support') || msg.includes('contribute')) {
-    return "Thank you for your interest in supporting our cause! You can donate through our website or contact us at kilindosaid771@gmail.com for more information about donation options.";
-  }
-
-  if (msg.includes('contact') || msg.includes('email') || msg.includes('phone')) {
-    return "You can reach us at kilindosaid771@gmail.com or call 0683859574. For quick inquiries, you can also WhatsApp us at +255683859574.";
-  }
-
-  if (msg.includes('location') || msg.includes('where') || msg.includes('address')) {
-    return "We are located in Dar es Salaam, Tanzania. For specific address details, please contact us directly.";
-  }
-
-  if (msg.includes('volunteer') || msg.includes('volunteering') || msg.includes('help')) {
-    return "We welcome volunteers! Please contact us at kilindosaid771@gmail.com to learn about current volunteer opportunities.";
-  }
-
-  return "Thank you for your question about Al Nahd Charty Foundation. For more detailed information, please contact us at kilindosaid771@gmail.com or call 0683859574.";
-}
 
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
