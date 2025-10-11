@@ -35,19 +35,19 @@ const LeadersSection = () => {
       name: 'Saidi kilindo',
       title: 'Secretary of the organization',
       image: leader3,
-      bio: 'Saidi manages our international partnerships and donor relations, bringing valuable experience from his previous roles with UNICEF and Save the Children. He has successfully secured funding for over $2 million worth of projects and established partnerships with organizations across 12 countries. His multilingual abilities and cross-cultural communication skills have been essential in building bridges between our local operations and international supporters.',
+      bio: 'Saidi Kilindo is a dedicated leader and humanitarian currently serving as the Secretary of the Organization. He plays an active role in coordinating community and charity initiatives that support orphans and vulnerable children, focusing on improving their living standards and access to education ,Beyo his leadership role, Saidi is deeply involved in environmental conservation efforts through his participation in tree planting programs and awareness campaigns. His passion for service, teamwork, and community development continues to inspire positive change and strengthen the impact of the organization’s mission.',
       email: 'kilindosaid771@gmail.com',
       linkedin: '#'
     },
-    {
-      id: 3,
-      name: 'Amara Ochieng',
-      title: 'Community Outreach Specialist',
-      image: leader6,
-      bio: 'Amara is a young, dynamic professional with a degree in Social Sciences and a passion for grassroots community work. She leads our community engagement efforts and has been crucial in building trust and relationships with local communities. Her youth and energy, combined with her deep understanding of local customs and languages, make her an effective bridge between our organization and the communities we serve. She has organized over 100 community events and workshops.',
-      email: 'amara.ochieng@chartyevents.org',
-      linkedin: '#'
-    },
+    // {
+    //   id: 3,
+    //   name: 'Amara Ochieng',
+    //   title: 'Community Outreach Specialist',
+    //   image: leader6,
+    //   bio: 'Amara is a young, dynamic professional with a degree in Social Sciences and a passion for grassroots community work. She leads our community engagement efforts and has been crucial in building trust and relationships with local communities. Her youth and energy, combined with her deep understanding of local customs and languages, make her an effective bridge between our organization and the communities we serve. She has organized over 100 community events and workshops.',
+    //   email: 'amara.ochieng@chartyevents.org',
+    //   linkedin: '#'
+    // },
     {
       id: 4,
       name: 'Victoria Modest',
@@ -66,15 +66,15 @@ const LeadersSection = () => {
       email: 'james.mwangi@chartyevents.org',
       linkedin: '#'
     },
-    {
-      id: 6,
-      name: 'Grace Akinyi',
-      title: 'Program Manager',
-      image: leader6,
-      bio: 'Grace Akinyi oversees our comprehensive program management and ensures the effective implementation of all community development initiatives. With a background in Project Management and Social Work, she coordinates between different departments and stakeholders to maximize program impact. Her organizational skills and attention to detail have been essential in maintaining high standards across all our projects and ensuring sustainable outcomes for the communities we serve.',
-      email: 'grace.akinyi@chartyevents.org',
-      linkedin: '#'
-    }
+    // {
+    //   id: 6,
+    //   name: 'Grace Akinyi',
+    //   title: 'Program Manager',
+    //   image: leader6,
+    //   bio: 'Grace Akinyi oversees our comprehensive program management and ensures the effective implementation of all community development initiatives. With a background in Project Management and Social Work, she coordinates between different departments and stakeholders to maximize program impact. Her organizational skills and attention to detail have been essential in maintaining high standards across all our projects and ensuring sustainable outcomes for the communities we serve.',
+    //   email: 'grace.akinyi@chartyevents.org',
+    //   linkedin: '#'
+    // }
   ];
 
   const openModal = (leader: any) => {
