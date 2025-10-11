@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { apiService, ContactFormData, DonationData, ZenopayPaymentData, CurrencyConversionData } from '@/lib/api';
+import { apiService, ContactFormData, DonationData, ZenopayPaymentData, CurrencyConversionData, AIBotRequest } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
 // Mutation Hooks
@@ -86,17 +86,11 @@ export const useCurrencyRate = () => {
   });
 };
 
-export const useCurrencyConversion = () => {
-  const { toast } = useToast();
-
+export const useAIBot = () => {
   return useMutation({
-    mutationFn: apiService.convertCurrency,
+    mutationFn: apiService.getAIBotResponse,
     onError: (error: any) => {
-      toast({
-        title: "Conversion Error",
-        description: "Failed to convert currency. Using cached rates.",
-        variant: "destructive",
-      });
+      console.error('[ai-bot] API call failed:', error);
     },
   });
 };

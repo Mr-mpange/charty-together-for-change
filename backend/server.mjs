@@ -1,5 +1,5 @@
 // Backend API for Charty - Contact (with email support), Donations, and Public Content
-// ESM (import) syntax is used since the root package.json has "type": "module".
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import dotenv from 'dotenv';
 import express from 'express';
@@ -11,10 +11,25 @@ dotenv.config();
 
 const app = express();
 
+// Initialize Gemini AI client
+let genAI = null;
+const geminiApiKey = process.env.AI_BOT_API_KEY || process.env.GEMINI_API_KEY;
+
+if (geminiApiKey && geminiApiKey !== 'your-ai-api-key-here') {
+  try {
+    genAI = new GoogleGenerativeAI(geminiApiKey);
+    console.log('[ai-bot] Gemini AI client initialized');
+  } catch (err) {
+    console.warn('[ai-bot] Failed to initialize Gemini AI client:', err?.message || err);
+  }
+} else {
+  console.warn('[ai-bot] Gemini API key not configured. AI bot will use fallback responses.');
+}
+
 // Config
 const PORT = process.env.PORT || 3001;
 const API_PREFIX = '/api';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8086,http://192.168.137.1:8086,http://192.168.1.200:8086';
 const ALLOWED_ORIGINS = CORS_ORIGIN.split(',').map((s) => s.trim());
 
 // Middleware
@@ -126,9 +141,79 @@ if (hasTwilio) {
   console.warn('[sms] Twilio env vars not fully set. SMS will be skipped.');
 }
 
-// Utilities
+// AI Bot function
+async function getAIBotResponse(message, context = '') {
+  // If Gemini AI is not configured, use fallback responses
+  if (!genAI) {
+    return getFallbackResponse(message);
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+    const organizationContext = `
+    You are an AI assistant for Al Nahd Charty Foundation (Charty Events), a charitable organization in Tanzania.
+    Organization details:
+    - Name: Al Nahd Charty Foundation
+    - Location: Dar es Salaam, Tanzania
+    - Contact: kilindosaid771@gmail.com, Phone: 0683859574
+    - WhatsApp: +255683859574
+    - Mission: Empowering communities and transforming lives through compassionate service
+    - Focus areas: Education support, school equipment, community development
+
+    You should provide helpful, accurate information about the organization, its services, and how people can get involved or donate.
+    Be friendly, professional, and informative. If users ask about topics outside your knowledge, direct them to contact the organization directly.
+    `;
+
+    const prompt = `${organizationContext}\n\nUser question: ${message}\n\nProvide a helpful response:`;
+
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.text();
+  } catch (error) {
+    console.error('[ai-bot] Error calling Gemini API:', error?.message || error);
+    return getFallbackResponse(message);
+  }
+}
+
+// Fallback responses for when Gemini API is not available
+function getFallbackResponse(message) {
+  const msg = message.toLowerCase();
+
+  if (msg.includes('hello') || msg.includes('hi') || msg.includes('help')) {
+    return "Hello! I'm the AI assistant for Al Nahd Charty Foundation. I can help you learn about our organization, services, and how to get involved. What would you like to know?";
+  }
+
+  if (msg.includes('about') || msg.includes('organization') || msg.includes('foundation')) {
+    return "Al Nahd Charty Foundation is a charitable organization based in Dar es Salaam, Tanzania. We focus on empowering communities through education support, school equipment distribution, and community development initiatives.";
+  }
+
+  if (msg.includes('services') || msg.includes('programs') || msg.includes('work')) {
+    return "We provide school equipment support, educational materials, and work to empower local communities. Our main focus is on education and helping children access quality learning resources.";
+  }
+
+  if (msg.includes('donate') || msg.includes('support') || msg.includes('contribute')) {
+    return "Thank you for your interest in supporting our cause! You can donate through our website or contact us at kilindosaid771@gmail.com for more information about donation options.";
+  }
+
+  if (msg.includes('contact') || msg.includes('email') || msg.includes('phone')) {
+    return "You can reach us at kilindosaid771@gmail.com or call 0683859574. For quick inquiries, you can also WhatsApp us at +255683859574.";
+  }
+
+  if (msg.includes('location') || msg.includes('where') || msg.includes('address')) {
+    return "We are located in Dar es Salaam, Tanzania. For specific address details, please contact us directly.";
+  }
+
+  if (msg.includes('volunteer') || msg.includes('volunteering') || msg.includes('help')) {
+    return "We welcome volunteers! Please contact us at kilindosaid771@gmail.com to learn about current volunteer opportunities.";
+  }
+
+  return "Thank you for your question about Al Nahd Charty Foundation. For more detailed information, please contact us at kilindosaid771@gmail.com or call 0683859574.";
+}
+
 function isValidEmail(email) {
-  return /.+@.+\..+/.test(String(email || '').toLowerCase());
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
 }
 
 function isValidPhone(phone) {
@@ -366,8 +451,33 @@ app.get(`${API_PREFIX}/impact-stats`, (req, res) => {
   res.json(stats);
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Backend API server running on port ${PORT}`);
-  console.log(`Healthcheck: http://localhost:${PORT}${API_PREFIX}/health`);
+// 4) AI Bot endpoint
+app.post(`${API_PREFIX}/ai-bot`, async (req, res) => {
+  try {
+    const { message, context } = req.body || {};
+
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'Message is required' });
+    }
+
+    console.log('[ai-bot] Processing message:', message);
+
+    // Get AI response (async operation)
+    const aiResponse = await getAIBotResponse(message.trim(), context);
+
+    console.log('[ai-bot] Response generated successfully');
+
+    return res.json({
+      success: true,
+      message: aiResponse,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('[ai-bot] Error processing request:', err);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to process AI bot request',
+      error: err?.message || err
+    });
+  }
 });

@@ -153,15 +153,15 @@ export interface ImpactStat {
   label: string;
 }
 
-export interface AboutContent {
-  mission: string;
-  vision: string;
-  values: Array<{
-    icon: string;
-    title: string;
-    description: string;
-  }>;
-  impactStats: ImpactStat[];
+export interface AIBotRequest {
+  message: string;
+  context?: string;
+}
+
+export interface AIBotResponse {
+  success: boolean;
+  message: string;
+  timestamp: string;
 }
 
 // API Service Functions
@@ -197,6 +197,12 @@ export const apiService = {
 
   async convertCurrency(data: CurrencyConversionData): Promise<any> {
     const response = await zenopayApi.post('/payments/currency/convert', data);
+    return response.data;
+  },
+
+  // AI Bot
+  async getAIBotResponse(data: AIBotRequest): Promise<AIBotResponse> {
+    const response = await api.post('/ai-bot', data);
     return response.data;
   },
 };
