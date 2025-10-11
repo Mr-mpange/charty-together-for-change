@@ -29,8 +29,12 @@ const Header = () => {
   const handleNavClick = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      console.log(`Navigating to ${href}`);
+      setTimeout(() => {
+        const headerHeight = 80; // Adjust for fixed header
+        const elementPosition = element.offsetTop - headerHeight;
+        window.scrollTo({ top: elementPosition, behavior: 'smooth' });
+        console.log(`Navigating to ${href}`);
+      }, 100); // Small delay for mobile menu close
     } else {
       console.warn(`Element ${href} not found`);
     }
