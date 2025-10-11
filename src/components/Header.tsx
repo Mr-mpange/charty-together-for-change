@@ -29,7 +29,10 @@ const Header = () => {
   const handleNavClick = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      console.log(`Navigating to ${href}`);
+    } else {
+      console.warn(`Element ${href} not found`);
     }
     setIsMenuOpen(false);
   };
@@ -112,26 +115,28 @@ const Header = () => {
           }}
           transition={{ duration: 0.3 }}
         >
-          <nav className="py-4 space-y-2">
-            {navItems.map((item) => (
-              <motion.a
-                key={item.name}
-                onClick={() => handleNavClick(item.href)}
-                className="block py-2 text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium"
-                whileHover={{ x: 10 }}
-              >
-                {item.name}
-              </motion.a>
-            ))}
-            <div className="pt-4">
-              <Button
-                onClick={() => handleNavClick('#donate')}
-                className="btn-donate w-full"
-              >
-                Donate Now
-              </Button>
-            </div>
-          </nav>
+          <div className="bg-white/95 backdrop-blur-md rounded-lg mt-2 p-4 shadow-lg">
+            <nav className="space-y-2">
+              {navItems.map((item) => (
+                <motion.a
+                  key={item.name}
+                  onClick={() => handleNavClick(item.href)}
+                  className="block py-2 text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium"
+                  whileHover={{ x: 10 }}
+                >
+                  {item.name}
+                </motion.a>
+              ))}
+              <div className="pt-4">
+                <Button
+                  onClick={() => handleNavClick('#donate')}
+                  className="btn-donate w-full"
+                >
+                  Donate Now
+                </Button>
+              </div>
+            </nav>
+          </div>
         </motion.div>
       </div>
     </motion.header>
