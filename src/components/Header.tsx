@@ -118,13 +118,13 @@ const Header = () => {
           }}
           transition={{ duration: 0.3 }}
         >
-          <div className="bg-white/95 backdrop-blur-md rounded-lg mt-2 p-4 shadow-lg">
+          <div className="bg-white/95 backdrop-blur-md rounded-lg mt-2 p-4 shadow-lg w-full">
             <nav className="space-y-2">
               {navItems.map((item) => (
                 <motion.a
                   key={item.name}
                   onClick={() => handleNavClick(item.href)}
-                  className="block py-2 text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium"
+                  className="block py-2 px-4 text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium rounded-md hover:bg-primary/10"
                 >
                   {item.name}
                 </motion.a>
