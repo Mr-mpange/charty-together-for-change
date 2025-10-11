@@ -149,7 +149,7 @@ const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Alnahd Charty{' '}
+          Alnahd Charity{' '}
           <span className="text-gradient-accent bg-gradient-to-r from-accent to-accent-light bg-clip-text text-transparent">
             Foundation
           </span>

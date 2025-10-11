@@ -153,7 +153,7 @@ const GallerySection = () => {
             Our Impact Gallery
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            See how Alnahd Charty Foundation makes a difference through school equipment, food support, comfort services, and environmental conservation
+            See how Alnahd Charity Foundation makes a difference through school equipment, food support, comfort services, and environmental conservation
           </p>
         </motion.div>
 
