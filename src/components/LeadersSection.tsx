@@ -50,19 +50,19 @@ const LeadersSection = () => {
     },
     {
       id: 4,
-      name: 'Vicky',
-      title: 'Executive Director',
+      name: 'Victoria Modest',
+      title: 'Chair Lady',
       image: leader2,
-      bio: 'Vicky is a dedicated medical professional with over 8 years of experience in public health and community medicine. She leads our healthcare initiatives and mobile clinic programs, ensuring that underserved communities receive quality medical care. Her expertise in preventive medicine and health education has been crucial in improving health outcomes across multiple regions. She holds an MD from the University of Nairobi and specializes in community health programs.',
-      email: 'fatima.hassan@chartyevents.org',
+      bio: 'Victoria Modest is an Environmental Sciences and Management student at Sokoine University of Agriculture (SUA). She serves as the Chair Lady of Al Nahd Charity Foundation and is an Ambassador of the My Birthday Tree Organization and the Tanzania Youth Biodiversity Network (TYBN). Victoria has participated in several outreach and charity activities, including visits to Kigamboni Hisani Orphanage Center, Dar Ul Musleemin in Morogoro, Faraja Orphanage Center during the Ramadan Iftar Party, and Madina Orphanage Center. She is passionate about environmental conservation, youth empowerment, and community development',
+      email: 'modestvictoria672@gmail.com',
       linkedin: '#'
     },
     {
       id: 5,
-      name: 'James Mwangi',
+      name: 'Suleiman Ali',
       title: 'Education Coordinator',
       image: leader5,
-      bio: 'James Mwangi is passionate about educational development and has been instrumental in establishing learning centers and educational programs for children in rural areas. With a Master\'s degree in Education from Kenyatta University, he has developed innovative teaching methods and curriculum adaptations for diverse learning environments. His commitment to educational equity has helped over 2,000 children access quality education and learning resources.',
+      bio: 'Suleiman Ali is an Environmental Sciences and Management student at Sokoine University of Agriculture (SUA). He serves as a Leader at Alnahdi Charity Foundation and is an active member of the My Birthday Tree Organization (MBTO) in Morogoro. Through his participation in various tree planting initiatives, he contributes to promoting environmental conservation and sustainability,Suleiman is passionate about supporting orphans and vulnerable children, working toward improving their living standards and educational opportunities. His goal is to empower young lives with essential skills, confidence, and hope for a better future, while continuing to advocate for environmental preservation and community development. and educational programs for children in rural areas. With a Master\'s degree in Education from Kenyatta University, he has developed innovative teaching methods and curriculum adaptations for diverse learning environments. His commitment to educational equity has helped over 2,000 children access quality education and learning resources.',
       email: 'james.mwangi@chartyevents.org',
       linkedin: '#'
     },

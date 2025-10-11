@@ -1,15 +1,98 @@
-// Backend API for Charty - Contact (with email support), Donations, and Public Content
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
 import dotenv from 'dotenv';
+import path from 'path';
+
+// Load environment variables from parent directory
+dotenv.config({ path: path.join(process.cwd(), '../.env') });
+
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
 import twilio from 'twilio';
-
-dotenv.config();
+import mongoose from 'mongoose';
+import axios from 'axios';
 
 const app = express();
+
+// Initialize MongoDB connection
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
+      maxPoolSize: 10,
+    });
+
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    console.log(`📊 Database: ${conn.connection.name}`);
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error.message);
+    console.log('⚠️ Continuing without database connection...');
+  }
+};
+
+// Connect to database
+connectDB();
+
+// Zenopay Payment Service
+class ZenopayService {
+  constructor() {
+    this.baseURL = process.env.ZENOPAY_BASE_URL || 'https://zenoapi.com/api';
+    this.apiKey = process.env.ZENOPAY_API_KEY;
+
+    if (!this.apiKey) {
+      console.log('⚠️ No ZENOPAY_API_KEY found, using demo mode');
+      this.apiKey = 'demo_api_key_placeholder';
+    }
+
+    this.client = axios.create({
+      baseURL: this.baseURL,
+      timeout: 30000,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.apiKey
+      }
+    });
+  }
+
+  async initiateMobileMoneyPayment(paymentData) {
+    try {
+      if (this.apiKey === 'demo_api_key_placeholder') {
+        return {
+          success: true,
+          orderId: 'demo_' + Date.now(),
+          paymentStatus: 'PENDING',
+          reference: `REF_${Date.now()}`,
+          metadata: paymentData.metadata
+        };
+      }
+
+      const payload = {
+        order_id: `order_${Date.now()}`,
+        buyer_name: paymentData.buyerName,
+        buyer_phone: paymentData.buyerPhone,
+        buyer_email: paymentData.buyerEmail,
+        amount: paymentData.amount,
+        webhook_url: paymentData.webhookUrl
+      };
+
+      const response = await this.client.post('/payments/mobile_money_tanzania', payload);
+
+      return {
+        success: true,
+        orderId: response.data.order_id,
+        paymentStatus: response.data.payment_status,
+        reference: response.data.reference,
+        metadata: response.data.metadata
+      };
+    } catch (error) {
+      throw new Error(`Payment initiation failed: ${error.response?.data?.message || error.message}`);
+    }
+  }
+}
+
+const zenopayService = new ZenopayService();
 
 // Initialize Gemini AI client
 let genAI = null;
@@ -451,7 +534,278 @@ app.get(`${API_PREFIX}/impact-stats`, (req, res) => {
   res.json(stats);
 });
 
-// 4) AI Bot endpoint
+// Zenopay Payment Endpoints
+// 1) Mobile Money Payment (Tanzania)
+app.post(`${API_PREFIX}/payments/mobile_money_tanzania`, async (req, res) => {
+  try {
+    const { buyerName, buyerPhone, buyerEmail, amount, currency, webhookUrl, metadata } = req.body;
+
+    if (!buyerName || !buyerPhone || !buyerEmail || !amount) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: buyerName, buyerPhone, buyerEmail, amount'
+      });
+    }
+
+    console.log('[zenopay] Initiating mobile money payment:', { buyerName, buyerPhone, amount });
+
+    // Call Zenopay API
+    const paymentResult = await zenopayService.initiateMobileMoneyPayment({
+      buyerName,
+      buyerPhone,
+      buyerEmail,
+      amount,
+      currency: currency || 'TZS',
+      webhookUrl: webhookUrl || process.env.ZENOPAY_WEBHOOK_URL,
+      metadata
+    });
+
+    console.log('[zenopay] Mobile money payment initiated successfully:', paymentResult);
+
+    return res.json({
+      success: true,
+      message: 'Payment initiated successfully',
+      data: {
+        orderId: paymentResult.orderId,
+        paymentStatus: paymentResult.paymentStatus,
+        reference: paymentResult.reference,
+        displayAmount: `${amount} ${currency || 'TZS'}`,
+        originalAmount: amount,
+        originalCurrency: currency || 'TZS',
+        metadata: paymentResult.metadata
+      }
+    });
+
+  } catch (error) {
+    console.error('[zenopay] Mobile money payment failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to initiate mobile money payment'
+    });
+  }
+});
+
+// 2) Card Payment
+app.post(`${API_PREFIX}/payments/card`, async (req, res) => {
+  try {
+    const {
+      buyerName, buyerPhone, buyerEmail, amount, currency,
+      cardNumber, expiryMonth, expiryYear, cvv, cardHolderName,
+      webhookUrl, metadata
+    } = req.body;
+
+    if (!buyerName || !buyerEmail || !amount || !cardNumber || !expiryMonth || !expiryYear || !cvv || !cardHolderName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    console.log('[zenopay] Initiating card payment for:', buyerName);
+
+    // In a real implementation, you would call zenopayService.initiateCardPayment
+    // For now, simulate success
+    const orderId = `card_${Date.now()}`;
+    const reference = `REF_${Date.now()}`;
+
+    console.log('[zenopay] Card payment initiated successfully');
+
+    return res.json({
+      success: true,
+      message: 'Card payment initiated successfully',
+      data: {
+        orderId,
+        paymentStatus: 'PENDING',
+        reference,
+        displayAmount: `${amount} ${currency || 'TZS'}`,
+        originalAmount: amount,
+        originalCurrency: currency || 'TZS',
+        redirectUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/${orderId}`,
+        metadata
+      }
+    });
+
+  } catch (error) {
+    console.error('[zenopay] Card payment failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to initiate card payment'
+    });
+  }
+});
+
+// 3) Bank Transfer Payment
+app.post(`${API_PREFIX}/payments/bank_transfer`, async (req, res) => {
+  try {
+    const {
+      buyerName, buyerPhone, buyerEmail, amount, currency,
+      accountNumber, bankCode, accountHolderName,
+      webhookUrl, metadata
+    } = req.body;
+
+    if (!buyerName || !buyerEmail || !amount || !accountNumber || !accountHolderName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    console.log('[zenopay] Initiating bank transfer for:', buyerName);
+
+    // In a real implementation, you would call zenopayService.initiateBankPayment
+    // For now, simulate success
+    const orderId = `bank_${Date.now()}`;
+    const reference = `REF_${Date.now()}`;
+
+    console.log('[zenopay] Bank transfer initiated successfully');
+
+    return res.json({
+      success: true,
+      message: 'Bank transfer initiated successfully',
+      data: {
+        orderId,
+        paymentStatus: 'PENDING',
+        reference,
+        displayAmount: `${amount} ${currency || 'TZS'}`,
+        originalAmount: amount,
+        originalCurrency: currency || 'TZS',
+        bankDetails: {
+          accountNumber: '1234567890',
+          bankName: 'Sample Bank',
+          accountName: 'Charty Foundation',
+          reference: reference
+        },
+        metadata
+      }
+    });
+
+  } catch (error) {
+    console.error('[zenopay] Bank transfer failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to initiate bank transfer'
+    });
+  }
+});
+
+// 4) Check Payment Status
+app.get(`${API_PREFIX}/payments/order-status/:orderId`, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order ID is required'
+      });
+    }
+
+    console.log('[zenopay] Checking payment status for:', orderId);
+
+    // In a real implementation, you would check with Zenopay API
+    // For now, simulate different statuses
+    const mockStatuses = ['PENDING', 'PROCESSING', 'COMPLETED', 'FAILED'];
+    const randomStatus = mockStatuses[Math.floor(Math.random() * mockStatuses.length)];
+
+    return res.json({
+      success: true,
+      orderId,
+      paymentStatus: randomStatus,
+      reference: `REF_${orderId}`,
+      timestamp: new Date().toISOString(),
+      metadata: {}
+    });
+
+  } catch (error) {
+    console.error('[zenopay] Status check failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to check payment status'
+    });
+  }
+});
+
+// 5) Zenopay Webhook Handler
+app.post(`${API_PREFIX}/webhooks/zenopay`, async (req, res) => {
+  try {
+    const webhookData = req.body;
+    console.log('[zenopay-webhook] Received webhook:', JSON.stringify(webhookData, null, 2));
+
+    const { order_id, payment_status, reference, transaction_id, metadata } = webhookData;
+
+    if (!order_id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Order ID is required'
+      });
+    }
+
+    // Update payment status in database (if using MongoDB)
+    console.log(`[zenopay-webhook] Payment ${order_id} status: ${payment_status}`);
+
+    // Here you would:
+    // 1. Update payment record in database
+    // 2. Send confirmation email to donor
+    // 3. Update donation status
+    // 4. Trigger any post-payment actions
+
+    return res.json({
+      success: true,
+      message: 'Webhook processed successfully',
+      orderId: order_id,
+      status: payment_status,
+      processed: true
+    });
+
+  } catch (error) {
+    console.error('[zenopay-webhook] Processing failed:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'Webhook processing failed',
+      error: error.message
+    });
+  }
+});
+
+// 6) Get Supported Payment Methods
+app.get(`${API_PREFIX}/payments/methods`, (req, res) => {
+  const methods = [
+    {
+      id: 'mobile',
+      name: 'Mobile Money',
+      description: 'Pay with M-Pesa, Tigo Pesa, Airtel Money, or HaloPesa',
+      providers: ['M-Pesa', 'Tigo Pesa', 'Airtel Money', 'HaloPesa'],
+      currencies: ['TZS'],
+      minAmount: 100,
+      maxAmount: 1000000
+    },
+    {
+      id: 'card',
+      name: 'Card Payment',
+      description: 'Pay with Visa, Mastercard, or other cards',
+      providers: ['Visa', 'Mastercard', 'American Express'],
+      currencies: ['TZS', 'USD'],
+      minAmount: 1000,
+      maxAmount: 5000000
+    },
+    {
+      id: 'bank',
+      name: 'Bank Transfer',
+      description: 'Transfer directly from your bank account',
+      providers: ['All Tanzanian Banks'],
+      currencies: ['TZS', 'USD'],
+      minAmount: 1000,
+      maxAmount: 10000000
+    }
+  ];
+
+  res.json({
+    success: true,
+    methods
+  });
+});
+
+// 8) AI Bot endpoint
 app.post(`${API_PREFIX}/ai-bot`, async (req, res) => {
   try {
     const { message, context } = req.body || {};
@@ -480,4 +834,11 @@ app.post(`${API_PREFIX}/ai-bot`, async (req, res) => {
       error: err?.message || err
     });
   }
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Charty Backend API running on port ${PORT}`);
+  console.log(`📅 Started at: ${new Date().toISOString()}`);
+  console.log(`🔗 API Base URL: http://localhost:${PORT}${API_PREFIX}`);
 });
