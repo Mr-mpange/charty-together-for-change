@@ -2,7 +2,7 @@
 export const config = {
   // API Configuration
   api: {
-    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://your-backend.vercel.app/api',
+    baseURL: import.meta.env.VITE_API_BASE_URL || 'https://charity-backend-for-test.vercel.app/api',
     timeout: 10000,
   },
   
@@ -18,7 +18,7 @@ export const config = {
       clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
     },
     zenopay: {
-      baseURL: import.meta.env.VITE_ZENOPAY_BASE_URL || 'https://your-backend.vercel.app/api',
+      baseURL: import.meta.env.VITE_ZENOPAY_BASE_URL || 'https://charity-backend-for-test.vercel.app/api',
       apiKey: import.meta.env.VITE_ZENOPAY_API_KEY || '',
     },
   },
