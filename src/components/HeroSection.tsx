@@ -48,8 +48,8 @@ const HeroSection = () => {
         setCurrentImage((prev) => (prev + 1) % heroImages.length);
         setNextImage((prev) => (prev + 1) % heroImages.length);
         setIsTransitioning(false);
-      }, 500); // Half of transition duration
-    }, 10000);
+      }, 250); // Faster transition
+    }, 15000); // Longer interval
 
     return () => clearInterval(interval);
   }, []);

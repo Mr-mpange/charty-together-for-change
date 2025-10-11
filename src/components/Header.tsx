@@ -81,8 +81,7 @@ const Header = () => {
               <motion.a
                 key={item.name}
                 onClick={() => handleNavClick(item.href)}
-                className="text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium"
-                whileHover={{ y: -2 }}
+                className="block py-2 text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium"
               >
                 {item.name}
               </motion.a>
@@ -126,7 +125,6 @@ const Header = () => {
                   key={item.name}
                   onClick={() => handleNavClick(item.href)}
                   className="block py-2 text-foreground hover:text-primary cursor-pointer transition-colors duration-200 font-medium"
-                  whileHover={{ x: 10 }}
                 >
                   {item.name}
                 </motion.a>

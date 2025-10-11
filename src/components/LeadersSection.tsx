@@ -216,7 +216,8 @@ const LeadersSection = () => {
                 {/* Contact Info */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
-                    href={`mailto:${selectedLeader.email}`}
+                    href={selectedLeader.email.startsWith('mailto:') ? selectedLeader.email : `mailto:${selectedLeader.email}`}
+                    onClick={(e) => e.stopPropagation()}
                     className="flex items-center justify-center space-x-2 py-2 px-4 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors duration-200"
                   >
                     <Mail className="w-4 h-4" />
