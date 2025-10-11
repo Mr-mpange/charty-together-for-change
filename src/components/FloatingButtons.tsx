@@ -138,7 +138,6 @@ const FloatingButtons = () => {
         <MessageCircle className="w-7 h-7" />
       </motion.button>
 
-
     </>
   );
 };

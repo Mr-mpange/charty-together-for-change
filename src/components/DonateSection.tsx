@@ -1,21 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Shield, Award, Users, DollarSign, CreditCard, Smartphone, Building, Lock } from 'lucide-react';
+import { Heart, Shield, Award, Users, CreditCard, Smartphone, Building, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
-import { useDonation, useZenopayPayment, useCurrencyRate } from '@/hooks/use-api';
+import { useDonation, useZenopayPayment } from '@/hooks/use-api';
 import { config } from '@/lib/config';
 
 const DonateSection = () => {
-  const [selectedAmount, setSelectedAmount] = useState('50');
+  const [selectedAmount, setSelectedAmount] = useState('125000');
   const [customAmount, setCustomAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('card');
-  const [currency, setCurrency] = useState<'USD' | 'TZS'>('USD');
-  const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
   const [donationType, setDonationType] = useState<'one-time' | 'monthly'>('one-time');
   const [card, setCard] = useState<{ number: string; name: string; expiry: string; cvc: string }>({
     number: '',
@@ -46,7 +44,6 @@ const DonateSection = () => {
   const { toast } = useToast();
   const donationMutation = useDonation();
   const zenopayPaymentMutation = useZenopayPayment();
-  const { data: currencyRate } = useCurrencyRate();
 
   // UI helpers - declared before useEffect
   const displayAmount = selectedAmount === 'custom' ? customAmount : selectedAmount;
@@ -55,44 +52,21 @@ const DonateSection = () => {
     ? '0'
     : displayAmountNumber.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
-  // Handle currency conversion
-  useEffect(() => {
-    const convertAmount = async () => {
-      if (displayAmountNumber > 0 && currency === 'USD' && currencyRate?.rate) {
-        const converted = displayAmountNumber * currencyRate.rate;
-        setConvertedAmount(Math.round(converted));
-      } else if (currency === 'TZS') {
-        setConvertedAmount(displayAmountNumber);
-      } else {
-        setConvertedAmount(null);
-      }
-    };
-
-    convertAmount();
-  }, [displayAmountNumber, currency, currencyRate]);
-
   const getDisplayAmount = () => {
-    if (currency === 'USD') {
-      return `$${formattedAmount}`;
-    } else {
-      return `${formattedAmount} TZS`;
-    }
+    return `${formattedAmount} TZS`;
   };
 
   const getConvertedDisplay = () => {
-    if (currency === 'USD' && convertedAmount) {
-      return `≈ ${convertedAmount.toLocaleString()} TZS`;
-    }
     return '';
   };
 
   const suggestedAmounts = [
-    { amount: '10', impact: 'Provides school supplies for 1 child' },
-    { amount: '25', impact: 'Feeds 5 children for a week' },
-    { amount: '50', impact: 'Supports medical care for 2 children' },
-    { amount: '100', impact: 'Sponsors 1 child\'s education for a month' },
-    { amount: '250', impact: 'Provides clean water access for a family' },
-    { amount: '500', impact: 'Supports an entire classroom for a month' },
+    { amount: '25000', impact: 'Provides school supplies for 1 child' },
+    { amount: '62500', impact: 'Feeds 5 children for a week' },
+    { amount: '125000', impact: 'Supports medical care for 2 children' },
+    { amount: '250000', impact: 'Sponsors 1 child\'s education for a month' },
+    { amount: '625000', impact: 'Provides clean water access for a family' },
+    { amount: '1250000', impact: 'Supports an entire classroom for a month' },
   ];
 
   const paymentMethods = [
@@ -133,12 +107,31 @@ const DonateSection = () => {
 
     // Use Zenopay for mobile money payments
     if (paymentMethod === 'mobile') {
+      // Validate required fields for mobile money payment
+      if (!donorInfo.phone) {
+        toast({
+          title: "Phone Number Required",
+          description: "Please enter your phone number for mobile money payment.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (parseFloat(finalAmount) < 100) {
+        toast({
+          title: "Minimum Amount",
+          description: "Minimum donation amount for mobile money is 100 TZS.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       zenopayPaymentMutation.mutate({
         buyerName: `${donorInfo.firstName} ${donorInfo.lastName}`,
-        buyerPhone: donorInfo.phone || '',
+        buyerPhone: donorInfo.phone,
         buyerEmail: donorInfo.email,
         amount: parseFloat(finalAmount),
-        currency: currency,
+        currency: 'TZS',
         metadata: {
           donationType: donationType,
           message: donorInfo.message,
@@ -146,12 +139,17 @@ const DonateSection = () => {
         }
       }, {
         onSuccess: (data) => {
-          // Reset form on success
-          setSelectedAmount('50');
+          console.log('Zenopay payment initiated successfully:', data);
+          toast({
+            title: "Payment Initiated! 📱",
+            description: `Your ${data.data?.displayAmount || finalAmount + ' TZS'} payment has been initiated. You will receive a prompt on your phone.`,
+          });
+
+          // Reset form after successful initiation
+          setSelectedAmount('125000');
           setCustomAmount('');
           setDonationType('one-time');
           setPaymentMethod('card');
-          setCurrency('USD');
           setCard({ number: '', name: '', expiry: '', cvc: '' });
           setMobile({ provider: 'M-Pesa', phone: '' });
           setBank({ reference: '' });
@@ -161,6 +159,18 @@ const DonateSection = () => {
             email: '',
             phone: '',
             message: '',
+          });
+        },
+        onError: (error: any) => {
+          console.error('Zenopay payment failed:', error);
+          const errorMessage = error.response?.data?.message ||
+                              error.message ||
+                              "Failed to initiate mobile money payment. Please check your details and try again.";
+
+          toast({
+            title: "Payment Failed",
+            description: errorMessage,
+            variant: "destructive",
           });
         },
       });
@@ -190,13 +200,12 @@ const DonateSection = () => {
       paymentMethod: paymentMethod as 'card' | 'mobile' | 'bank',
       donorInfo: augmentedDonorInfo,
     }, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         // Reset form on success
-        setSelectedAmount('50');
+        setSelectedAmount('125000');
         setCustomAmount('');
         setDonationType('one-time');
         setPaymentMethod('card');
-        setCurrency('USD');
         setCard({ number: '', name: '', expiry: '', cvc: '' });
         setMobile({ provider: 'M-Pesa', phone: '' });
         setBank({ reference: '' });
@@ -270,26 +279,14 @@ const DonateSection = () => {
             viewport={{ once: true }}
           >
             <form onSubmit={handleDonate} className="space-y-6">
-              {/* Currency Selection */}
+              {/* Currency Selection - Removed USD option */}
               <div>
                 <Label className="text-lg font-semibold text-primary mb-4 block">
                   Currency
                 </Label>
-                <RadioGroup value={currency} onValueChange={(value) => setCurrency(value as 'USD' | 'TZS')}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="USD" id="usd" />
-                    <Label htmlFor="usd" className="cursor-pointer">US Dollars (USD)</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="TZS" id="tzs" />
-                    <Label htmlFor="tzs" className="cursor-pointer">Tanzanian Shillings (TZS)</Label>
-                  </div>
-                </RadioGroup>
-                {currency === 'USD' && currencyRate?.formatted && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Current rate: {currencyRate.formatted}
-                  </p>
-                )}
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="text-muted-foreground">All donations are in Tanzanian Shillings (TZS)</p>
+                </div>
               </div>
 
               {/* Amount Selection */}
@@ -306,15 +303,15 @@ const DonateSection = () => {
                         setSelectedAmount(suggestion.amount);
                         setCustomAmount('');
                       }}
-                      className={`p-4 rounded-lg border-2 text-left transition-all duration-200 ${
-                        selectedAmount === suggestion.amount
-                          ? 'border-primary bg-primary/5 text-primary'
-                          : 'border-border hover:border-primary/50'
-                      }`}
+            className={`p-4 rounded-lg border-2 text-left transition-all duration-200 hover:shadow-md ${
+              selectedAmount === suggestion.amount
+                ? 'border-primary bg-primary/10 text-primary shadow-md'
+                : 'border-border hover:border-primary/50'
+            }`}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
-                      <div className="text-xl font-bold">${suggestion.amount}</div>
+                      <div className="text-xl font-bold">{suggestion.amount} TZS</div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {suggestion.impact}
                       </div>
@@ -331,21 +328,18 @@ const DonateSection = () => {
                     </div>
                   </RadioGroup>
                   <div className="flex-1">
-                    <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                      <Input
-                        type="number"
-                        placeholder="Enter amount"
-                        value={customAmount}
-                        onChange={(e) => {
-                          setCustomAmount(e.target.value);
-                          setSelectedAmount('custom');
-                        }}
-                        className="pl-10"
-                        min="1"
-                        step="0.01"
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      placeholder="Enter amount in TSH"
+                      value={customAmount}
+                      onChange={(e) => {
+                        setCustomAmount(e.target.value);
+                        setSelectedAmount('custom');
+                      }}
+                      className=""
+                      min="1"
+                      step="0.01"
+                    />
                     {displayAmountNumber > 0 && (
                       <p className="mt-2 text-xs text-muted-foreground">
                         You will donate <span className="font-semibold">{getDisplayAmount()}</span>
@@ -526,7 +520,7 @@ const DonateSection = () => {
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Amount</span>
-                  <span className="font-semibold">${formattedAmount}</span>
+                  <span className="font-semibold">{getDisplayAmount()}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Type</span>
@@ -579,13 +573,13 @@ const DonateSection = () => {
               <h3 className="text-2xl font-bold text-primary mb-4">Your Impact</h3>
               <div className="space-y-3">
                 <div className="p-3 bg-primary/5 rounded-lg">
-                  <strong className="text-primary">$25</strong> provides nutritious meals for 5 children for an entire week
+                  <strong className="text-primary">62,500 TZS</strong> provides nutritious meals for 5 children for an entire week
                 </div>
                 <div className="p-3 bg-accent/5 rounded-lg">
-                  <strong className="text-accent">$100</strong> covers school fees, books, and supplies for one child for a month
+                  <strong className="text-accent">250,000 TZS</strong> covers school fees, books, and supplies for one child for a month
                 </div>
                 <div className="p-3 bg-success/5 rounded-lg">
-                  <strong className="text-success">$250</strong> funds medical care and health checkups for 10 children
+                  <strong className="text-success">625,000 TZS</strong> funds medical care and health checkups for 10 children
                 </div>
               </div>
             </div>
