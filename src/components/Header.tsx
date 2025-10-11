@@ -27,7 +27,7 @@ const Header = () => {
   ];
 
   const handleNavClick = (href: string) => {
-    const element = document.querySelector(href);
+    const element = document.querySelector(href) as HTMLElement;
     if (element) {
       setTimeout(() => {
         const headerHeight = 80; // Adjust for fixed header
