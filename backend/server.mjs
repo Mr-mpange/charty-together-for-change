@@ -101,7 +101,7 @@ const zenopayService = new ZenopayService();
 // Config
 const PORT = process.env.PORT || 3001;
 const API_PREFIX = '/api';
-const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8086,http://192.168.137.1:8086,http://192.168.1.200:8086';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173,http://127.0.0.1:5173,http://localhost:8086,http://192.168.137.1:8086,http://192.168.1.200:8086,https://charty-together-for-change-lei3nws35-mr-mpanges-projects.vercel.app';
 const ALLOWED_ORIGINS = CORS_ORIGIN.split(',').map((s) => s.trim());
 
 // Middleware
