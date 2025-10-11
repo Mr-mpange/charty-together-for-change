@@ -13,6 +13,8 @@ import gallery7 from '@/assets/gallery-7.jpg';
 import gallery8 from '@/assets/gallery-8.jpg';
 import gallery9 from '@/assets/gallery-9.jpg';
 import gallery10 from '@/assets/gallery-10.jpg';
+import gallery11 from '@/assets/gallery-11.jpg';  
+import gallery12 from '@/assets/gallery-12.jpg';
 
 const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -33,7 +35,7 @@ const GallerySection = () => {
       title: 'Community Food Program',
       category: 'Food Support',
       date: 'November 2024',
-      location: 'Mwanza Region',
+      location: 'Morogoro Region',
       description: 'Our monthly food assistance program providing nutritious food packages to vulnerable families in the community.'
     },
     {
@@ -41,26 +43,26 @@ const GallerySection = () => {
       image: gallery1,
       title: 'Environmental Clean-up Drive',
       category: 'Environment',
-      date: 'October 2024',
-      location: 'Dodoma City',
+      date: 'November 2024',
+      location: 'Morogoro City',
       description: 'Community members joined together for our environmental conservation initiative, cleaning up public spaces and planting trees.'
     },
-    // {
-    //   id: 3,
-    //   image: gallery3,
-    //   title: 'Environmental Clean-up Drive',
-    //   category: 'Environment',
-    //   date: 'October 2024',
-    //   location: 'Dodoma City',
-    //   description: 'Community members joined together for our environmental conservation initiative, cleaning up public spaces and planting trees.'
-    // },
+    {
+      id: 5,
+      image: gallery11,
+      title: 'Environmental Clean-up Drive',
+      category: 'Environment',
+      date: 'September 2025',
+      location: 'Daresalaam  City',
+      description: 'Community members joined together for our environmental conservation initiative, cleaning up public spaces and planting trees.'
+    },
     {
       id: 4,
       image: gallery3,
       title: 'Support & Comfort Sessions',
       category: 'Support',
-      date: 'September 2024',
-      location: 'Kilimanjaro Region',
+      date: 'November 2024',
+      location: 'Morogoro Region',
       description: 'Providing emotional support and comfort services to families going through difficult times in our community.'
     },
     // {
@@ -81,15 +83,15 @@ const GallerySection = () => {
     //   location: 'Rural Communities',
     //   description: 'Emergency food distribution during drought season, reaching over 200 families with essential food supplies.'
     // },
-    // {
-    //   id: 7,
-    //   image: gallery7,
-    //   title: 'Environmental Education Workshop',
-    //   category: 'Environment',
-    //   date: 'June 2024',
-    //   location: 'Morogoro Schools',
-    //   description: 'Teaching children and communities about environmental conservation and sustainable living practices.'
-    // },
+     {
+      id: 6,
+      image: gallery12,
+      title: 'Environmental Education Workshop',
+      category: 'Environment',
+      date: 'June 2024',
+      location: 'Madina Orphange ',
+      description: 'Teaching children and communities about environmental conservation and sustainable living practices.'
+    },
     // {
     //   id: 8,
     //   image: gallery8,
