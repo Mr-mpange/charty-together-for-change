@@ -66,7 +66,7 @@ const Header = () => {
             </div>
             <div>
               <h1 className="text-xl lg:text-2xl font-bold text-gradient-primary">
-                Alnahd Charty Foundation
+                Alnahd Charity Foundation
               </h1>
               <p className="text-xs text-muted-foreground hidden sm:block">
                 Spread Kindness 

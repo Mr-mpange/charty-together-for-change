@@ -61,7 +61,7 @@ const ServicesSection = () => {
             Our Services
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Alnahd Charty Foundation provides targeted assistance programs that address the most critical needs in our communities
+            Alnahd Charity Foundation provides targeted assistance programs that address the most critical needs in our communities
           </p>
         </motion.div>
 
@@ -114,7 +114,7 @@ const ServicesSection = () => {
                     className="w-full group-hover:bg-primary group-hover:text-white transition-all duration-300"
                   >
                     Learn More
-                  </Button>
+                  </Button>      
                 </div>
               </motion.div>
             );

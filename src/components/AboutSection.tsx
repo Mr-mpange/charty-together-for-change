@@ -33,7 +33,7 @@ const AboutSection = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gradient-primary">
-            About Charty Events
+            About Charity Events
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Transforming lives across Tanzania through compassionate action and sustainable development
