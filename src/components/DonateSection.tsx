@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Shield, Award, Users, CreditCard, Smartphone, Building, Lock } from 'lucide-react';
+import { Apple, BookOpen, Heart, Stethoscope, Users, GraduationCap, CreditCard, Smartphone, Building, Shield, Award, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useToast } from '@/hooks/use-toast';
-import { useDonation, useZenopayPayment } from '@/hooks/use-api';
+import { useDonation, useZenopayPayment, useZenopayCardPayment, useZenopayBankPayment } from '@/hooks/use-api';
 import { config } from '@/lib/config';
 
 const DonateSection = () => {
@@ -44,6 +44,8 @@ const DonateSection = () => {
   const { toast } = useToast();
   const donationMutation = useDonation();
   const zenopayPaymentMutation = useZenopayPayment();
+  const zenopayCardPaymentMutation = useZenopayCardPayment();
+  const zenopayBankPaymentMutation = useZenopayBankPayment();
 
   // UI helpers - declared before useEffect
   const displayAmount = selectedAmount === 'custom' ? customAmount : selectedAmount;
@@ -135,7 +137,8 @@ const DonateSection = () => {
         metadata: {
           donationType: donationType,
           message: donorInfo.message,
-          provider: mobile.provider
+          provider: mobile.provider,
+          zenoId: 'zp60679713' // Your Zenopay account ID for receiving funds
         }
       }, {
         onSuccess: (data) => {
@@ -177,7 +180,115 @@ const DonateSection = () => {
       return;
     }
 
-    // For card and bank payments, use the legacy donation system (for now)
+    // For card and bank payments, use Zenopay (real payments)
+    if (paymentMethod === 'card') {
+      // Validate card details
+      if (!card.number || !card.name || !card.expiry || !card.cvc) {
+        toast({
+          title: "Card Details Required",
+          description: "Please fill in all card details for payment processing.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Parse expiry date
+      const [expiryMonth, expiryYear] = card.expiry.split('/');
+      if (!expiryMonth || !expiryYear || expiryMonth.length !== 2 || expiryYear.length !== 2) {
+        toast({
+          title: "Invalid Expiry Date",
+          description: "Please enter expiry date in MM/YY format.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      zenopayCardPaymentMutation.mutate({
+        buyerName: `${donorInfo.firstName} ${donorInfo.lastName}`,
+        buyerPhone: donorInfo.phone || '',
+        buyerEmail: donorInfo.email,
+        amount: parseFloat(finalAmount),
+        currency: 'TZS',
+        cardNumber: card.number.replace(/\s/g, ''),
+        expiryMonth: expiryMonth,
+        expiryYear: `20${expiryYear}`,
+        cvv: card.cvc,
+        cardHolderName: card.name,
+        metadata: {
+          donationType: donationType,
+          message: donorInfo.message,
+          zenoId: 'zp60679713' // Your Zenopay account ID for receiving funds
+        }
+      }, {
+        onSuccess: (data) => {
+          // Reset form on success
+          setSelectedAmount('125000');
+          setCustomAmount('');
+          setDonationType('one-time');
+          setPaymentMethod('card');
+          setCard({ number: '', name: '', expiry: '', cvc: '' });
+          setMobile({ provider: 'M-Pesa', phone: '' });
+          setBank({ reference: '' });
+          setDonorInfo({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            message: '',
+          });
+        },
+      });
+      return;
+    }
+
+    if (paymentMethod === 'bank') {
+      // Validate bank details
+      if (!bank.reference) {
+        toast({
+          title: "Reference Required",
+          description: "Please provide a reference for the bank transfer.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      zenopayBankPaymentMutation.mutate({
+        buyerName: `${donorInfo.firstName} ${donorInfo.lastName}`,
+        buyerPhone: donorInfo.phone || '',
+        buyerEmail: donorInfo.email,
+        amount: parseFloat(finalAmount),
+        currency: 'TZS',
+        accountNumber: bank.reference,
+        bankCode: 'TANZANIA', // You might need to adjust this based on Zenopay's requirements
+        accountHolderName: `${donorInfo.firstName} ${donorInfo.lastName}`,
+        metadata: {
+          donationType: donationType,
+          message: donorInfo.message,
+          zenoId: 'zp60679713' // Your Zenopay account ID for receiving funds
+        }
+      }, {
+        onSuccess: (data) => {
+          // Reset form on success
+          setSelectedAmount('125000');
+          setCustomAmount('');
+          setDonationType('one-time');
+          setPaymentMethod('card');
+          setCard({ number: '', name: '', expiry: '', cvc: '' });
+          setMobile({ provider: 'M-Pesa', phone: '' });
+          setBank({ reference: '' });
+          setDonorInfo({
+            firstName: '',
+            lastName: '',
+            email: '',
+            phone: '',
+            message: '',
+          });
+        },
+      });
+      return;
+    }
+
+    // Fallback to legacy donation system if needed (though all methods should use Zenopay now)
     // Build a simple payment detail summary
     let paymentSummary = '';
     if (paymentMethod === 'card') {
@@ -404,7 +515,7 @@ const DonateSection = () => {
                         onChange={(e) => setCard({ ...card, cvc: e.target.value })}
                       />
                       <div className="md:col-span-2 text-xs text-muted-foreground">
-                        This is a demo UI. No real card charge will be made.
+                        {/* Real card payments powered by Zenopay. You will be redirected to a secure payment page. */}
                       </div>
                     </div>
                   )}
@@ -434,14 +545,14 @@ const DonateSection = () => {
 
                   {paymentMethod === 'bank' && (
                     <div className="space-y-2">
-                      <div className="text-sm">Transfer to our bank account and include a reference. Contact us for details.</div>
+                      <div className="text-sm">Real bank transfers powered by Zenopay. Enter a reference for your transfer.</div>
                       <Input
-                        placeholder="Your Transfer Reference (optional)"
+                        placeholder="Transfer Reference (required)"
                         value={bank.reference}
                         onChange={(e) => setBank({ ...bank, reference: e.target.value })}
                       />
                       <div className="text-xs text-muted-foreground">
-                        After transferring, you can also email your receipt to donations@chartyevents.org for quicker confirmation.
+                        You will receive bank transfer instructions and reference number after clicking "Donate".
                       </div>
                     </div>
                   )}
@@ -490,18 +601,20 @@ const DonateSection = () => {
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={donationMutation.isPending || zenopayPaymentMutation.isPending}
+                disabled={donationMutation.isPending || zenopayPaymentMutation.isPending || zenopayCardPaymentMutation.isPending || zenopayBankPaymentMutation.isPending}
                 className="w-full btn-donate text-lg py-4"
               >
-                {donationMutation.isPending || zenopayPaymentMutation.isPending
+                {donationMutation.isPending || zenopayPaymentMutation.isPending || zenopayCardPaymentMutation.isPending || zenopayBankPaymentMutation.isPending
                   ? 'Processing...'
                   : `Donate ${getDisplayAmount()} Now`}
               </Button>
               <div className="mt-2 flex items-center justify-center text-xs text-muted-foreground">
                 <Lock className="w-3.5 h-3.5 mr-1" />
                 {paymentMethod === 'mobile'
-                  ? 'Real payments powered by Zenopay. You will receive a mobile prompt.'
-                  : 'Payments are simulated for demo purposes. No charges will be made.'}
+                  ? ''
+                  : paymentMethod === 'card'
+                  ? ''
+                  : ''}
               </div>
             </form>
           </motion.div>
@@ -568,24 +681,160 @@ const DonateSection = () => {
               </div>
             </div>
 
-            {/* Impact Examples */}
-            <div className="bg-white rounded-2xl p-6 shadow-soft">
-              <h3 className="text-2xl font-bold text-primary mb-4">Your Impact</h3>
-              <div className="space-y-3">
-                <div className="p-3 bg-primary/5 rounded-lg">
-                  <strong className="text-primary">62,500 TZS</strong> provides nutritious meals for 5 children for an entire week
+            {/* Impact Examples - Enhanced Stylish Design */}
+            <motion.div
+              className="relative bg-gradient-to-br from-white via-white to-slate-50 rounded-3xl p-8 shadow-strong border border-white/20 backdrop-blur-sm"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -5, transition: { duration: 0.3 } }}
+            >
+              {/* Background decorative elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-accent/10 to-transparent rounded-full translate-y-12 -translate-x-12"></div>
+
+              <div className="relative z-10">
+                <motion.div
+                  className="text-center mb-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  viewport={{ once: true }}
+                >
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-3">
+                    Your Impact
+                  </h3>
+                  <p className="text-muted-foreground text-lg">See how your donation creates lasting change</p>
+                </motion.div>
+
+                <div className="grid gap-4">
+                  {/* Meal Support Card */}
+                  <motion.div
+                    className="group relative bg-gradient-to-r from-orange-50 via-orange-100/50 to-orange-50 rounded-2xl p-6 border border-orange-200/50 hover:border-orange-300 transition-all duration-300"
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 }}
+                    viewport={{ once: true }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: "0 20px 40px rgba(251, 146, 60, 0.15)"
+                    }}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <Apple className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="text-2xl font-bold text-orange-600">62,500 TZS</span>
+                          <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded-full">
+                            Most Popular
+                          </span>
+                        </div>
+                        <p className="text-gray-700 text-sm leading-relaxed">
+                          Provides <strong className="text-orange-600">nutritious meals for 5 children</strong> for an entire week, ensuring they have the energy to learn and grow
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Heart className="w-8 h-8 text-orange-400" />
+                    </div>
+                  </motion.div>
+
+                  {/* Education Support Card */}
+                  <motion.div
+                    className="group relative bg-gradient-to-r from-blue-50 via-blue-100/50 to-blue-50 rounded-2xl p-6 border border-blue-200/50 hover:border-blue-300 transition-all duration-300"
+                    initial={{ opacity: 0, x: 30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: "0 20px 40px rgba(59, 130, 246, 0.15)"
+                    }}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <BookOpen className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="text-2xl font-bold text-blue-600">250,000 TZS</span>
+                          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">
+                            Education Focus
+                          </span>
+                        </div>
+                        <p className="text-gray-700 text-sm leading-relaxed">
+                          Covers <strong className="text-blue-600">school fees, books, and supplies</strong> for one child for a month, giving them access to quality education
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <GraduationCap className="w-8 h-8 text-blue-400" />
+                    </div>
+                  </motion.div>
+
+                  {/* Healthcare Support Card */}
+                  <motion.div
+                    className="group relative bg-gradient-to-r from-green-50 via-green-100/50 to-green-50 rounded-2xl p-6 border border-green-200/50 hover:border-green-300 transition-all duration-300"
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    viewport={{ once: true }}
+                    whileHover={{
+                      scale: 1.02,
+                      boxShadow: "0 20px 40px rgba(34, 197, 94, 0.15)"
+                    }}
+                  >
+                    <div className="flex items-start space-x-4">
+                      <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                          <Stethoscope className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="text-2xl font-bold text-green-600">625,000 TZS</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                            Health Impact
+                          </span>
+                        </div>
+                        <p className="text-gray-700 text-sm leading-relaxed">
+                          Funds <strong className="text-green-600">medical care and health checkups</strong> for 10 children, ensuring they stay healthy and strong
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                      <Heart className="w-8 h-8 text-green-400" />
+                    </div>
+                  </motion.div>
                 </div>
-                <div className="p-3 bg-accent/5 rounded-lg">
-                  <strong className="text-accent">250,000 TZS</strong> covers school fees, books, and supplies for one child for a month
-                </div>
-                <div className="p-3 bg-success/5 rounded-lg">
-                  <strong className="text-success">625,000 TZS</strong> funds medical care and health checkups for 10 children
-                </div>
+
+                {/* Call to action */}
+                <motion.div
+                  className="text-center mt-8 p-6 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-2xl border border-primary/10"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                  viewport={{ once: true }}
+                >
+                  <p className="text-lg font-semibold text-primary mb-2">
+                    Every donation counts! 🎯
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    Your generosity directly impacts children's lives and creates positive change in our communities
+                  </p>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Contact Information */}
-            <div className="bg-white rounded-2xl p-6 shadow-soft">
+            {/* <div className="bg-white rounded-2xl p-6 shadow-soft">
               <h3 className="text-xl font-bold text-primary mb-4">Other Ways to Give</h3>
               <div className="space-y-2 text-sm">
                 <p><strong>Bank Transfer:</strong> Contact us for bank details</p>
@@ -593,7 +842,7 @@ const DonateSection = () => {
                 <p><strong>Email:</strong> {config.app.contactEmail}</p>
                 <p><strong>Phone:</strong> {config.app.phone}</p>
               </div>
-            </div>
+            </div> */}
           </motion.div>
         </div>
       </div>

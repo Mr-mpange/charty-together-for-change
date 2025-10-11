@@ -31,26 +31,18 @@ export interface ZenopayPaymentData {
   metadata?: Record<string, any>;
 }
 
-export interface CurrencyConversionData {
-  amount: number;
-  from?: 'USD' | 'TZS';
-  to?: 'USD' | 'TZS';
+export interface ZenopayCardPaymentData extends ZenopayPaymentData {
+  cardNumber: string;
+  expiryMonth: string;
+  expiryYear: string;
+  cvv: string;
+  cardHolderName: string;
 }
 
-export interface CurrencyRateInfo {
-  rate: number;
-  rateInfo: {
-    from: string;
-    to: string;
-    rate: number;
-    lastUpdated: string | null;
-    source: string;
-  };
-  formatted: string;
-}
-
-export interface PaymentStatusData {
-  orderId: string;
+export interface ZenopayBankPaymentData extends ZenopayPaymentData {
+  accountNumber: string;
+  bankCode: string;
+  accountHolderName: string;
 }
 
 export interface MobileMoneyPaymentResponse {
@@ -181,6 +173,16 @@ export const apiService = {
   // Zenopay Payment Integration
   async initiateMobileMoneyPayment(data: ZenopayPaymentData): Promise<MobileMoneyPaymentResponse> {
     const response = await zenopayApi.post('/payments/mobile_money_tanzania', data);
+    return response.data;
+  },
+
+  async initiateCardPayment(data: ZenopayCardPaymentData): Promise<MobileMoneyPaymentResponse> {
+    const response = await zenopayApi.post('/payments/card', data);
+    return response.data;
+  },
+
+  async initiateBankPayment(data: ZenopayBankPaymentData): Promise<MobileMoneyPaymentResponse> {
+    const response = await zenopayApi.post('/payments/bank_transfer', data);
     return response.data;
   },
 

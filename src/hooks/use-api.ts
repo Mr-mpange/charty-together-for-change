@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { apiService, ContactFormData, DonationData, ZenopayPaymentData, CurrencyConversionData, AIBotRequest } from '@/lib/api';
+import { apiService, ContactFormData, DonationData, ZenopayPaymentData, ZenopayCardPaymentData, ZenopayBankPaymentData, CurrencyConversionData, AIBotRequest } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 
 // Mutation Hooks
@@ -61,6 +61,48 @@ export const useZenopayPayment = () => {
       toast({
         title: "Payment Failed",
         description: error.response?.data?.message || "Failed to initiate payment. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const useZenopayCardPayment = () => {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: apiService.initiateCardPayment,
+    onSuccess: (data) => {
+      toast({
+        title: "Card Payment Initiated! 💳",
+        description: `Your ${data.data.displayAmount} card payment has been initiated. Please complete the payment on the secure page.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Card Payment Failed",
+        description: error.response?.data?.message || "Failed to initiate card payment. Please check your card details and try again.",
+        variant: "destructive",
+      });
+    },
+  });
+};
+
+export const useZenopayBankPayment = () => {
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: apiService.initiateBankPayment,
+    onSuccess: (data) => {
+      toast({
+        title: "Bank Payment Initiated! 🏦",
+        description: `Your ${data.data.displayAmount} bank payment has been initiated. Please complete the transfer using the provided reference.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Bank Payment Failed",
+        description: error.response?.data?.message || "Failed to initiate bank payment. Please check your details and try again.",
         variant: "destructive",
       });
     },
