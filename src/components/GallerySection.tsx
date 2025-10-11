@@ -15,6 +15,8 @@ import gallery9 from '@/assets/gallery-9.jpg';
 import gallery10 from '@/assets/gallery-10.jpg';
 import gallery11 from '@/assets/gallery-11.jpg';  
 import gallery12 from '@/assets/gallery-12.jpg';
+import gallery13 from '@/assets/gallery-13.jpg';
+
 
 const GallerySection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -40,7 +42,7 @@ const GallerySection = () => {
     },
     {
       id: 3,
-      image: gallery1,
+      image: gallery13,
       title: 'Environmental Clean-up Drive',
       category: 'Environment',
       date: 'November 2024',
