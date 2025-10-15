@@ -1,5 +1,0 @@
-[33m9309c0e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Add GitHub Pages deployment workflow
-[33m54530f6[m Update website with logo, 6 leaders, and complete gallery
-[33m6910d21[m Refine homepage and gallery
-[33mb725db6[m Fix: Improve hero section visibility and timing
-[33mb57a7ae[m Fix: Resolve missing `hover:shadow-glow` class
