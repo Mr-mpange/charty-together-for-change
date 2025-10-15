@@ -41,6 +41,14 @@ export const config = {
     aiBotEnabled: (import.meta.env.VITE_AI_BOT_ENABLED || 'true') === 'true',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
   },
+
+  // Social Media Links
+  social: {
+    facebook: import.meta.env.VITE_FACEBOOK_URL || 'https://facebook.com/your-page',
+    twitter: import.meta.env.VITE_TWITTER_URL || 'https://twitter.com/your-handle',
+    linkedin: import.meta.env.VITE_LINKEDIN_URL || 'https://linkedin.com/company/your-company',
+    instagram: import.meta.env.VITE_INSTAGRAM_URL || 'https://instagram.com/your-handle',
+  },
 };
 
 export default config;

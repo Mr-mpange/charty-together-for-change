@@ -47,10 +47,10 @@ const ContactSection = () => {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook', color: 'hover:text-blue-600' },
-    { icon: Twitter, href: '#', label: 'Twitter', color: 'hover:text-blue-400' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn', color: 'hover:text-blue-800' },
-    { icon: Instagram, href: '#', label: 'Instagram', color: 'hover:text-pink-600' },
+    { icon: Facebook, href: config.social.facebook, label: 'Facebook', color: 'hover:text-blue-600' },
+    { icon: Twitter, href: config.social.twitter, label: 'Twitter', color: 'hover:text-blue-400' },
+    { icon: Linkedin, href: config.social.linkedin, label: 'LinkedIn', color: 'hover:text-blue-800' },
+    { icon: Instagram, href: config.social.instagram, label: 'Instagram', color: 'hover:text-pink-600' },
   ];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
