@@ -26,28 +26,28 @@ const LeadersSection = () => {
       name: 'Anuary Ghusub',
       title: 'Chief Director',
       image: leader1,
-      bio: 'Anuary Ghusub brings over 06 years of experience in international development and community empowerment. He holds a Degree in Social Development from the University of Dar es Salaam and has led numerous successful initiatives across East Africa. Under his leadership, Charty Events has expanded its reach to serve over 1,500 children and 45 communities. His passion for sustainable development and community-driven solutions has been instrumental in creating lasting positive change.',
-      email: 'emmanuel.mwalimu@chartyevents.org',
+      bio: '𝗔𝗻𝘄𝗮𝗿 𝗚𝗵𝘂𝘀𝘂𝗯 𝗦𝗮𝗹𝘂𝗺 𝗶𝘀 𝘁𝗵𝗲 𝗙𝗼𝘂𝗻𝗱𝗲𝗿 𝗮𝗻𝗱 𝗖𝗵𝗮𝗶𝗿𝗺𝗮𝗻 𝗼𝗳 𝗔𝗹 𝗡𝗮𝗵𝗱 𝗙𝗼𝘂𝗻𝗱𝗮𝘁𝗶𝗼𝗻, 𝗮𝗻 𝗼𝗿𝗴𝗮𝗻𝗶𝘇𝗮𝘁𝗶𝗼𝗻 𝗯𝗼𝗿𝗻 𝗳𝗿𝗼𝗺 𝗮 𝗱𝗲𝗲𝗽 𝘀𝗲𝗻𝘀𝗲 𝗼𝗳 𝗰𝗼𝗺𝗽𝗮𝘀𝘀𝗶𝗼𝗻 𝗮𝗻𝗱 𝗿𝗲𝗳𝗹𝗲𝗰𝘁𝗶𝗼𝗻 𝗼𝗻 𝘁𝗵𝗲 𝗹𝗶𝘃𝗲𝘀 𝗼𝗳 𝗼𝗿𝗽𝗵𝗮𝗻𝘀  𝘄𝗵𝗮𝘁 𝘁𝗵𝗲𝘆 𝗲𝗮𝘁, 𝘄𝗵𝗲𝗿𝗲 𝘁𝗵𝗲𝘆 𝗴𝗼 𝗱𝘂𝗿𝗶𝗻𝗴 𝗵𝗼𝗹𝗶𝗱𝗮𝘆𝘀, 𝗮𝗻𝗱 𝘄𝗵𝗮𝘁 𝘁𝗵𝗼𝘂𝗴𝗵𝘁𝘀 𝗳𝗶𝗹𝗹 𝘁𝗵𝗲𝗶𝗿 𝘆𝗼𝘂𝗻𝗴 𝗺𝗶𝗻𝗱𝘀. 𝗛𝗶𝘀 𝗷𝗼𝘂𝗿𝗻𝗲𝘆 𝗯𝗲𝗴𝗮𝗻 𝗳𝗿𝗼𝗺 𝗲𝗺𝗽𝗮𝘁𝗵𝘆 𝗮𝗻𝗱 𝗮 𝗱𝗲𝘀𝗶𝗿𝗲 𝘁𝗼 𝗯𝗿𝗶𝗻𝗴 𝗵𝗼𝗽𝗲 𝘁𝗼 𝘁𝗵𝗼𝘀𝗲 𝗳𝗮𝗰𝗶𝗻𝗴 𝗹𝗶𝗳𝗲 𝘄𝗶𝘁𝗵𝗼𝘂𝘁 𝗽𝗮𝗿𝗲𝗻𝘁𝗮𝗹 𝗹𝗼𝘃𝗲. 𝗕𝗲𝘀𝗶𝗱𝗲𝘀 𝗵𝗶𝘀 𝗳𝗼𝘂𝗻𝗱𝗮𝘁𝗶𝗼𝗻 𝗿𝗼𝗹𝗲, 𝗵𝗲 𝘀𝗲𝗿𝘃𝗲𝘀 𝗮𝘀 𝗮 𝗩𝗼𝗹𝘂𝗻𝘁𝗲𝗲𝗿 𝗣𝗿𝗼𝗷𝗲𝗰𝘁 𝗖𝗼𝗼𝗿𝗱𝗶𝗻𝗮𝘁𝗼𝗿 𝗳𝗼𝗿 𝘁𝗵𝗲 𝗧𝗮𝗻𝘇𝗮𝗻𝗶𝗮 𝗬𝗼𝘂𝘁𝗵 𝗕𝗶𝗼𝗱𝗶𝘃𝗲𝗿𝘀𝗶𝘁𝘆 𝗡𝗲𝘁𝘄𝗼𝗿𝗸 (𝗧𝗬𝗕𝗡) 𝗮𝗻𝗱 𝘁𝗵𝗲 𝗩𝗶𝗰𝗲 𝗣𝗿𝗲𝘀𝗶𝗱𝗲𝗻𝘁 𝗼𝗳 𝗦𝗠𝗖𝗼𝗦𝗘 𝗬𝗼𝘂𝘁𝗵 𝗠𝗮𝗽𝗽𝗲𝗿𝘀. 𝗔𝗻𝘄𝗮𝗿 𝗶𝘀 𝗮 𝗽𝗮𝘀𝘀𝗶𝗼𝗻𝗮𝘁𝗲 𝗚𝗜𝗦 𝗘𝘅𝗽𝗲𝗿𝘁 𝗮𝗻𝗱 𝗬𝗼𝘂𝗻𝗴 𝗘𝗻𝘃𝗶𝗿𝗼𝗻𝗺𝗲𝗻𝘁𝗮𝗹 𝗔𝗱𝘃𝗼𝗰𝗮𝘁𝗲 𝗱𝗲𝗱𝗶𝗰𝗮𝘁𝗲𝗱 𝘁𝗼 𝗰𝗼𝗺𝗯𝗶𝗻𝗶𝗻𝗴 𝘁𝗲𝗰𝗵𝗻𝗼𝗹𝗼𝗴𝘆, 𝗺𝗮𝗽𝗽𝗶𝗻𝗴, 𝗮𝗻𝗱 𝗰𝗼𝗺𝗺𝘂𝗻𝗶𝘁𝘆 𝗰𝗮𝗿𝗲 𝘁𝗼 𝗯𝘂𝗶𝗹𝗱 𝗮 𝗸𝗶𝗻𝗱𝗲𝗿 𝗮𝗻𝗱 𝗺𝗼𝗿𝗲 𝗲𝗾𝘂𝗶𝘁𝗮𝗯𝗹𝗲 𝗳𝘂𝘁𝘂𝗿𝗲 𝗳𝗼𝗿 𝗧𝗮𝗻𝘇𝗮𝗻𝗶𝗮',
+      email: 'anwarghusub@gmail.com',
       linkedin: '#'
     },
     {
       id: 2,
       name: 'Saidi kilindo',
-      title: 'Secretary of the organization',
+      title: 'General Secretary of the organization',
       image: leader3,
       bio: 'Saidi Kilindo is a dedicated leader and humanitarian currently serving as the Secretary of the Organization. He plays an active role in coordinating community and charity initiatives that support orphans and vulnerable children, focusing on improving their living standards and access to education ,Beyo his leadership role, Saidi is deeply involved in environmental conservation efforts through his participation in tree planting programs and awareness campaigns. His passion for service, teamwork, and community development continues to inspire positive change and strengthen the impact of the organization’s mission.',
       email: 'kilindosaid771@gmail.com',
       linkedin: '#'
     },
-    // {
-    //   id: 3,
-    //   name: 'Amara Ochieng',
-    //   title: 'Community Outreach Specialist',
-    //   image: leader6,
-    //   bio: 'Amara is a young, dynamic professional with a degree in Social Sciences and a passion for grassroots community work. She leads our community engagement efforts and has been crucial in building trust and relationships with local communities. Her youth and energy, combined with her deep understanding of local customs and languages, make her an effective bridge between our organization and the communities we serve. She has organized over 100 community events and workshops.',
-    //   email: 'amara.ochieng@chartyevents.org',
-    //   linkedin: '#'
-    // },
+    {
+      id: 3,
+      name: 'Sara Musa Saidi',
+      title: 'Asistant General Secretary of the organization',
+      image: leader6,
+      bio: 'Sara Musa Saidi is a dedicated humanitarian and passionate advocate for social welfare, currently serving as an Ambassador of Al Nahd Charity Foundation. Through her commitment to community empowerment and compassion-driven initiatives, she has continuously worked to improve the lives of orphans, vulnerable children, and underprivileged communities.Her active participation in various charitable events and outreach programs reflects her unwavering dedication to service and leadership. Ambassador Sara musa has been part of several impactful visits and events, including:A humanitarian outreach at Kigamboni Hisani Orphanage Center, where she engaged with children and supported welfare programs.A charitable mission to Morogoro Dar Ul Musleemin, focusing on education and community support.The Ramadhan Iftar Party at Faraja Orphanage Center, promoting unity, compassion, and shared blessings during the holy month.A social support visit to Madina Orphanage Center, strengthening ties and providing encouragement to the youth.Through these initiatives and many others,  Sara Musa Saidi continues to uphold the values of empathy, generosity, and service to humanity,inspiring others to join hands in building a more compassionate world.',
+      email: 'saramusa391@gmail.com',
+      linkedin: '#'
+    },
     {
       id: 4,
       name: 'Victoria Modest',
@@ -66,15 +66,24 @@ const LeadersSection = () => {
       email: 'james.mwangi@chartyevents.org',
       linkedin: '#'
     },
-    // {
-    //   id: 6,
-    //   name: 'Grace Akinyi',
-    //   title: 'Program Manager',
-    //   image: leader6,
-    //   bio: 'Grace Akinyi oversees our comprehensive program management and ensures the effective implementation of all community development initiatives. With a background in Project Management and Social Work, she coordinates between different departments and stakeholders to maximize program impact. Her organizational skills and attention to detail have been essential in maintaining high standards across all our projects and ensuring sustainable outcomes for the communities we serve.',
-    //   email: 'grace.akinyi@chartyevents.org',
-    //   linkedin: '#'
-    // }
+    {
+      id: 6,
+      name: 'Halima Hakim',
+      title: 'Mentor of the organization',
+      image: leader6,
+      bio: 'Halima A. Hakim is a dedicated science educator and the Academic Master at Kianga Secondary School. She holds a Bachelor’s Degree in Science with Education and has years of experience nurturing young minds and guiding students toward academic excellence As a mentor at Al Nahd Charity Foundation, Halima is passionate about shaping compassionate youth through education, community service, and charity initiatives. Her commitment to empowering others reflects her belief that true change begins with knowledge, kindness, and collective responsibility.',
+      email: 'shamigirl67@gmail.com',
+      linkedin: '#'
+    },
+    {
+      id: 7,
+      name: 'Fajda Hamisi',
+      title: ' Public Relations&Communication Director of the organization',
+      image: leader6,
+      bio: 'Fajda Hamisi is an Public admnistration student at TANZANIA PUBLIC SERVICE COLLAGE (TPSC) MTWARA.she is a  Public Relations&Communication Director of Al Nahd Charity Foundation and is an Ambassador of the Al rahiim Islamic foundation  .passionate about Environmental conservation and youth empowerment,Fajda actively engages in a community projects promoting sustainability biodiversity and social welfare..',
+      email: 'fajdarashidi008@gmail.com',
+      linkedin: '#'
+    }
   ];
 
   const openModal = (leader: any) => {
