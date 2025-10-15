@@ -15,7 +15,9 @@ import leader1 from '@/assets/leader-1.jpg';
 import leader2 from '@/assets/leader-2.png';
 import leader3 from '@/assets/leader-3.jpg';
 import leader5 from '@/assets/leader-5.png';
-import leader6 from '@/assets/leader-6.png';
+import leader6 from '@/assets/leader-6.jpg';
+import leader7 from '@/assets/leader-7.jpg';
+import leader8 from '@/assets/leader-8.jpg';
 
 const LeadersSection = () => {
   const [selectedLeader, setSelectedLeader] = useState(null);
@@ -70,7 +72,7 @@ const LeadersSection = () => {
       id: 6,
       name: 'Halima Hakim',
       title: 'Mentor of the organization',
-      image: leader6,
+      image: leader7,
       bio: 'Halima A. Hakim is a dedicated science educator and the Academic Master at Kianga Secondary School. She holds a Bachelor’s Degree in Science with Education and has years of experience nurturing young minds and guiding students toward academic excellence As a mentor at Al Nahd Charity Foundation, Halima is passionate about shaping compassionate youth through education, community service, and charity initiatives. Her commitment to empowering others reflects her belief that true change begins with knowledge, kindness, and collective responsibility.',
       email: 'shamigirl67@gmail.com',
       linkedin: '#'
@@ -79,7 +81,7 @@ const LeadersSection = () => {
       id: 7,
       name: 'Fajda Hamisi',
       title: ' Public Relations&Communication Director of the organization',
-      image: leader6,
+      image: leader8,
       bio: 'Fajda Hamisi is an Public admnistration student at TANZANIA PUBLIC SERVICE COLLAGE (TPSC) MTWARA.she is a  Public Relations&Communication Director of Al Nahd Charity Foundation and is an Ambassador of the Al rahiim Islamic foundation  .passionate about Environmental conservation and youth empowerment,Fajda actively engages in a community projects promoting sustainability biodiversity and social welfare..',
       email: 'fajdarashidi008@gmail.com',
       linkedin: '#'
